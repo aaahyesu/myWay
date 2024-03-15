@@ -4,28 +4,28 @@ import React from 'react';
 
 const Community: NextPage = () => {
     return(
-        <div className="px-20">
+        <div className="px-1">
             {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((_, i) => (
-            <div key={i} className="mt-10">
-                <div className="flex space-x-4 mb-3.5">
+            <div key={i} className="mt-4">
+                <div className="flex space-x-3 mb-2">
                     <img
-                        className="inline-block h-10 w-10 rounded-full ring-2 ring-white"
+                        className="inline-block h-8 w-8 rounded-full ring-2 ring-white"
                         src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                         alt=""
                     />
                     <div>
-                    <h1 className="text-md font-Nanum">Name</h1>
-                    <h2 style={{ fontSize: '11px' }} className="font-light font-Nanum">DaeJeon, Korea</h2>
+                    <h1 className="text-sm font-Nanum">Name</h1>
+                    <h2 style={{ fontSize: '9px' }} className="font-light font-Nanum">DaeJeon, Korea</h2>
                     </div>
                     <div className="flex flex-grow justify-end"></div>
-                    <button className="inline-flex items-center font-Nanum rounded-2xl bg-gray-50 px-4 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">follow</button>
+                    <button className="inline-flex items-center font-Nanum rounded-2xl bg-gray-50 px-4 text-xs text-gray-600 ring-1 ring-inset ring-gray-500/10">follow</button>
                 </div>
                 <div
-      id="carouselExampleIndicators"
-      className="relative"
-      data-twe-carousel-init
-      data-twe-ride="carousel"
-    >
+                    id="carouselExampleIndicators"
+                    className="relative"
+                    data-twe-carousel-init
+                    data-twe-ride="carousel"
+                  >
       {/* Carousel indicators */}
       <div
         className="absolute bottom-0 left-0 right-0 z-[2] mx-[15%] mb-4 flex list-none justify-center p-0"
@@ -157,12 +157,12 @@ const Community: NextPage = () => {
                             alt=""
                     />
                 </div> */}
-                <div className="px-4 mt-4 flex space-x-3.5">
-                    <h1 className="text-xl font-Nanum font-semibold">Title - instagram copycat</h1>
-                    <span className="inline-flex font-Nanum items-center rounded-lg bg-blue-400 px-3 py-1 text-sm font-semibold text-white">맛집</span>
-                    <span className="inline-flex font-Nanum items-center rounded-lg  bg-blue-400 px-3 py-1 text-sm font-semibold text-white">관광지</span>
+                <div className="mt-2 flex space-x-2">
+                    <h1 className="font-Nanum font-semibold">Title - instagram copycat</h1>
+                    <span className="inline-flex font-Nanum items-center rounded-lg bg-blue-400 px-2  text-sm text-white">맛집</span>
+                    <span className="inline-flex font-Nanum  items-center rounded-lg  bg-blue-400 px-2 text-sm text-white">관광지</span>
                 </div>
-                <h1 className="px-4 mt-1.5 text-md font-light">Title - instagram copycat blablabllbhhhbalddddddddddddbhbabl</h1>
+                <h1 className="mt-1 font-Nanum text-sm">detail ~~~~~~</h1>
             </div>
             ))}
         </div>
