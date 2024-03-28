@@ -13,3 +13,6 @@
     @apply text-green-900;
   }
 }
+.slick-slide {
+  margin: 0 8px;
+}
