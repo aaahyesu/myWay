@@ -19,9 +19,6 @@ export default function Main() {
   return (
     <div
       style={{
-        height: "170vh",
-        overflowY: "scroll",
-        padding: "10px",
         justifyContent: "center",
         alignItems: "center",
       }}
@@ -32,11 +29,11 @@ export default function Main() {
         <input
           type="text"
           placeholder="' 대전 맛집 코스 ' 를 검색해보세요"
-          className="w-full mx-5 text-gray-700 bg-gray-100 focus:outline-none"
+          className="w-full mx-5 text-gray-700 bg-gray-100 focus:outline-none font-Nanum"
         />
         <UserCircleIcon className="w-7 h-7 text-gray-700" />
       </div>
-      <div className="w-[340px] mt-4 flex flex-col items-center justify-center">
+      <div className="w-full mt-4 flex flex-col items-center justify-center">
         <Swiper
           effect="fade"
           navigation={true}
@@ -57,19 +54,19 @@ export default function Main() {
               style={{ marginRight: "12px" }}
             >
               <div className="text-center border-2 border-gray-300 rounded-lg p-4 bg-slate-50">
-                <div className="flex justify-center items-center h-[160px] mt-2">
-                  <div className="w-full">
+                <div className="flex justify-center items-center h-40 mt-2">
+                  <div className=" w-60">
                     <Image
                       src="/background.png"
                       alt="/img"
-                      width={180}
-                      height={100}
-                      layout="responsive"
+                      width={100}
+                      height={70}
+                      layout="fixed"
                     />
                   </div>
                 </div>
                 <div className="h-14 mt-5">
-                  <h2 className="text-center text-md font-semibold">
+                  <h2 className="text-center text-md font-semibold ">
                     대전의 맛집 거리가 궁금하다면?
                   </h2>
                   <p className="text-center text-xs text-gray-500 mr-2 ml-2">
@@ -82,22 +79,34 @@ export default function Main() {
         </Swiper>
       </div>
       <div className="flex justify-center mt-5 mr-2">
-        <div className="flex flex-col items-center mr-10">
+        <Link
+          href="main/restaurant"
+          className="flex flex-col items-center mr-12 hover:bg-slate-100 focus:ring focus:outline-none focus:ring-gray-500"
+        >
           <img src="/restaurant.png" alt="Icon1" className="w-10 h-10" />
           <p className="text-sm text-gray-700 mt-1 font-semibold">맛집</p>
-        </div>
-        <div className="flex flex-col items-center mr-10">
+        </Link>
+        <Link
+          href="main/cafe"
+          className="flex flex-col items-center mr-12 hover:bg-slate-100"
+        >
           <img src="/cafe.png" alt="Icon2" className="w-10 h-10" />
           <p className="text-sm text-gray-700 mt-1 font-semibold">카페</p>
-        </div>
-        <div className="flex flex-col items-center mr-10">
+        </Link>
+        <Link
+          href="main/guide"
+          className="flex flex-col items-center mr-12 hover:bg-slate-100"
+        >
           <img src="/guide.png" alt="Icon3" className="w-10 h-10" />
           <p className="text-sm text-gray-700 mt-1 font-semibold">관광지</p>
-        </div>
-        <div className="flex flex-col items-center">
+        </Link>
+        <Link
+          href="main/road"
+          className="flex flex-col items-center hover:bg-slate-100"
+        >
           <img src="/road.png" alt="Icon4" className="w-10 h-10" />
           <p className="text-sm text-gray-700 mt-1 font-semibold">추천코스</p>
-        </div>
+        </Link>
       </div>
       <div className="flex mt-4 items-start w-full">
         <img
@@ -118,7 +127,7 @@ export default function Main() {
           height="300"
           frameBorder="0"
           style={{ border: 0, marginTop: "5px" }}
-          src={`https://www.google.com/maps/embed/v1/place?key=APIKEY&q=LOCATION`}
+          src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAb4wNGFmgyWp9ZSn06pqxwHExSQfBl3eA&q=LOCATION`}
           allowFullScreen
         ></iframe>
       </div>
@@ -136,7 +145,7 @@ export default function Main() {
         {[1, 2, 3, 4].map((index) => (
           <div key={index} className="flex flex-col items-center">
             <Link href="/main/1">
-              <div className="w-40 h-32 rounded-xl overflow-hidden">
+              <div className="w-42 h-32 rounded-xl overflow-hidden">
                 <Image
                   src={`/placeSample.png`}
                   alt={`Image ${index}`}
@@ -152,6 +161,7 @@ export default function Main() {
           </div>
         ))}
       </div>
+      <p className="mb-24"></p>
     </div>
   );
 }
