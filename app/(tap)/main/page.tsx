@@ -82,7 +82,7 @@ export default function Main() {
         </Swiper>
       </div>
       <div className="flex justify-center mt-5 mr-2">
-        <div className="flex flex-col items-center mr-10">
+        <div className="flex flex-col items-center mr-10 hover hover:shadow-slate-500">
           <img src="/restaurant.png" alt="Icon1" className="w-10 h-10" />
           <p className="text-sm text-gray-700 mt-1 font-semibold">맛집</p>
         </div>
