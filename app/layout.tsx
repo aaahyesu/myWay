@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Noto_Sans_KR } from 'next/font/google';
+import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
+import AuthProvider from "./auth/provider";
 
 const inter = Inter({ weight: "400", subsets: ["latin"], display: "swap" });
 
 const noto = Noto_Sans_KR({
-  subsets: ['latin'],
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ export default function RootLayout({
       <body
         className={`${noto.className} bg-white text-black max-w-sm mx-auto`}
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
