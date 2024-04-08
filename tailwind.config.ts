@@ -16,6 +16,7 @@ const config: Config = {
     },
     fontFamily: {
       Nanum: ["Nanum"],
+      Nato: ["--font-noto-sans-kr"],
     },
   },
   plugins: [],
