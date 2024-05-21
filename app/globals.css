@@ -9,6 +9,20 @@
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: "NPSfontBold";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2310@1.0/NPSfontBold.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LOTTERIACHAB";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/LOTTERIACHAB.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
 @layer base {
   a {
     @apply text-black;
@@ -26,11 +40,18 @@ body {
 
 body {
   background: #eee;
-  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif, YanoljaYacheR;
   font-size: 14px;
   color: #000;
   margin: 0;
   padding: 0;
+}
+h1 {
+  font-family: LOTTERIACHAB;
+}
+
+h2 {
+  font-family: NPSfontBold;
 }
 
 .swiper {

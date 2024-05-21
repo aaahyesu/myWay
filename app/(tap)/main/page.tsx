@@ -127,7 +127,7 @@ export default function Main() {
           height="300"
           frameBorder="0"
           style={{ border: 0, marginTop: "5px" }}
-          src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAb4wNGFmgyWp9ZSn06pqxwHExSQfBl3eA&q=LOCATION`}
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY}`}
           allowFullScreen
         ></iframe>
       </div>
