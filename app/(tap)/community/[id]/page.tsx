@@ -127,7 +127,7 @@ const Detail: NextPage = () => {
                 <div className="flex flex-wrap justify-center space-x-10">
                     <span className="flex flex-col space-y-2 items-center">
                         <Image src="/eat.png" alt="Description of the image" width="80" height="80"/>
-                        <h1 className="text-sm">대식가</h1>
+                        <h1 className="text-sm ">대식가</h1>
                     </span> 
                     <span className="flex flex-col space-y-2 items-center">
                         <Image src="/family.png" alt="Description of the image" width="80" height="80"/>

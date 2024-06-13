@@ -73,7 +73,7 @@ const MyPath: NextPage = () => {
                 <Link href="/community/1">
                 <div className="mt-1">
                     <h1 className="text-black text-sm hover:text-gray-500">Title - instagram copycat</h1>
-                    <span className="text-xs font-light text-gray-500">[ Seoul - hongdae ]</span>
+                    <span className="text-xs font-light text-gray-500 ">[ Seoul - hongdae ]</span>
                 </div>
                 </Link>
             </div>

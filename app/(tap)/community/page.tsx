@@ -53,7 +53,7 @@ const Community: NextPage = () => {
                         alt=""
                     />
                     <div>
-                      <h1 className="text-base ">Name</h1>
+                      <h1 className="text-base">Name</h1>
                       <h2 style={{ fontSize: '10px' }} className="font-light">DaeJeon, Korea</h2>
                     </div>
                     <div className="flex flex-grow justify-end"></div>
@@ -87,7 +87,7 @@ const Community: NextPage = () => {
                 <div className="mt-2 flex space-x-2 px-2">
                     <h1 className="text-black text-base hover:text-gray-500 font-semibold">Title - instagram copycat</h1>
                     <span className="inline-flex items-center rounded-lg bg-blue-400 px-2  text-sm text-white">맛집</span>
-                    <span className="inline-flex  items-center rounded-lg  bg-blue-400 px-2 text-sm text-white">관광지</span>
+                    <span className="inline-flex items-center rounded-lg  bg-blue-400 px-2 text-sm text-white">관광지</span>
                 </div>
                 <h1 className="mt-1 px-2 text-black hover:text-gray-500 text-sm">detail ~~~~~~</h1>
                 </Link>

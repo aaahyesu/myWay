@@ -20,7 +20,7 @@ export default function PlaceDetail() {
         alignItems: "center",
       }}
     >
-      <div className="flex items-center font-Nanum text-lg text-black text-left font-bold mt-5">
+      <div className="flex items-center text-lg text-black text-left font-bold mt-5">
         <div>
           에이트
           <p className="font-semibold text-xs text-gray-300">
@@ -41,7 +41,7 @@ export default function PlaceDetail() {
           height={230}
         />
       </div>
-      <p className="text-gray-600 font-Nanum text-center p-10 ">
+      <p className="text-gray-600 text-center p-10 ">
         도심속에 비밀의 정원. 나무와 물이 만나는 그곳에서 모두의 마음이
         aight(all right) 하시길 바랍니다. 넓은 공간과 여유로운 주차공간이 있는
         대형 베이커리 카페입니다. 일상의 작은 쉼표가 되고 싶습니다 You ganna be

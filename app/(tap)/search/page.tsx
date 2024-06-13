@@ -8,7 +8,7 @@ export default function Search() {
       <input
         type="text"
         placeholder="' 대전 맛집 코스 ' 를 검색해보세요"
-        className="w-full mx-5 text-gray-700 bg-gray-100 focus:outline-none font-Nanum"
+        className="w-full mx-5 text-gray-700 bg-gray-100 focus:outline-none"
       />
     </div>
   );
