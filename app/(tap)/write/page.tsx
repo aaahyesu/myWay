@@ -1,10 +1,14 @@
 "use client";
 
 import type { NextPage } from "next";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { GoogleMap, LoadScript, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
 import { CldUploadWidget } from "next-cloudinary";
 import { CldImage } from "next-cloudinary";
-import { useState } from "react";
+
+// Google Maps API 키
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_ROUTES_API; 
+
 
 interface CloudinaryResult {
     public_id: string;
@@ -13,6 +17,60 @@ interface CloudinaryResult {
   const Upload: NextPage = () => {
     const [publicIds, setPublicIds] = useState<string[]>([]);
   
+    const [locations, setLocations] = useState<string[]>(['', '', '', '', '']); // 장소 배열
+    const [responses, setResponses] = useState<any[]>([]); // DirectionsService 응답 배열
+
+    // DirectionsService 응답을 받았을 때 호출될 콜백
+    const directionsCallback = (result: any, status: any, index: number) => {
+        if (status === 'OK') {
+        const updatedResponses = [...responses];
+        updatedResponses[index] = result;
+        setResponses(updatedResponses);
+        } else {
+        console.error(`Directions request failed due to ${status}`);
+        }
+    };
+
+    // 경로 검색 함수
+    const searchRoute = () => {
+        // 초기화
+        setResponses([]);
+
+        // DirectionsService를 통해 입력된 위치들 사이의 경로 검색
+        for (let i = 0; i < locations.length - 1; i++) {
+        const origin = locations[i];
+        const destination = locations[i + 1];
+
+        // Skip empty locations
+        if (!origin || !destination) {
+            continue;
+        }
+
+        const directionsServiceOptions = {
+            origin,
+            destination,
+            travelMode: 'TRANSIT', // 운전 경로 설정 (걷기는 'WALKING', 대중교통은 'TRANSIT')
+        };
+
+        const directionsService = new google.maps.DirectionsService();
+        directionsService.route(directionsServiceOptions, (result, status) => directionsCallback(result, status, i));
+        }
+    };
+
+    // Input 변경 핸들러
+    const handleInputChange = (index: number, value: string) => {
+        const updatedLocations = [...locations];
+        updatedLocations[index] = value;
+        setLocations(updatedLocations);
+    };
+
+    // 초기화
+    useEffect(() => {
+        setLocations(['', '', '', '', '']);
+        setResponses([]);
+    }, []);
+
+    
     const handleUpload = (result: any) => {
         if (result.event === 'success') {
           if (publicIds.length < 10) {
@@ -42,29 +100,38 @@ interface CloudinaryResult {
                     name="name"
                     placeholder="테마"
                 />
-                
-                <input
-                    className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="출발지"
-                />
 
-                <input
-                    className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="도착지"
-                />
-                <input
-                    className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="장소"
-                />
+                {locations.map((location, index) => (
+                        <div key={`location-${index}`}>
+                            <input
+                            className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="장소"
+                            value={location}
+                            onChange={(e) => handleInputChange(index, e.target.value)}
+                            />
+                        </div>
+                        ))}
+                        <button onClick={searchRoute}>경로 검색</button>
+                        <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+                    <GoogleMap
+                    mapContainerStyle={{ width: '100%', height: '400px' }}
+                    center={{ lat: 37.5665, lng: 126.9780 }}
+                    zoom={13} // 초기 줌 레벨
+                    >
+                    {/* DirectionsRenderer를 통해 모든 경로 표시 */}
+                    {responses.map((response, index) => (
+                        response && (
+                        <DirectionsRenderer
+                            key={`directions-${index}`}
+                            options={{ directions: response }}
+                        />
+                        )
+                    ))}
+                    </GoogleMap>
+                </LoadScript>
                 <textarea
                     className="w-full p-3 text-base placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-gray-400  rounded-xl"
                     rows={5}
@@ -118,6 +185,8 @@ interface CloudinaryResult {
             </div>
             <button className="w-full mt-4 py-2 bg-black text-base font-semibold text-white border rounded-lg">등록</button>
             <p className="mb-24"></p>
+            <div>
+      </div>
         </div>
     );
 }
