@@ -18,6 +18,7 @@ const config: Config = {
       Nanum: ["Nanum"],
       Nato: ["--font-noto-sans-kr"],
       NPSfontBold: ["NPSfontBold"],
+      LOTTERIACHAB: ["LOTTERIACHAB"],
     },
   },
   plugins: [],

@@ -29,7 +29,7 @@ export default function Main() {
         <input
           type="text"
           placeholder="' 대전 맛집 코스 ' 를 검색해보세요"
-          className="w-full mx-5 text-gray-700 bg-gray-100 focus:outline-none"
+          className="w-full mx-5 text-gray-700 bg-gray-100 focus:outline-none font-Nanum"
         />
         <UserCircleIcon className="w-7 h-7 text-gray-700" />
       </div>
@@ -66,7 +66,7 @@ export default function Main() {
                   </div>
                 </div>
                 <div className="h-14 mt-5">
-                  <h2 className="text-center text-md font-semibold font-NPSfontBold">
+                  <h2 className="text-center text-md font-semibold ">
                     대전의 맛집 거리가 궁금하다면?
                   </h2>
                   <p className="text-center text-xs text-gray-500 mr-2 ml-2">
@@ -127,7 +127,7 @@ export default function Main() {
           height="300"
           frameBorder="0"
           style={{ border: 0, marginTop: "5px" }}
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY}`}
+          src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAb4wNGFmgyWp9ZSn06pqxwHExSQfBl3eA&q=LOCATION`}
           allowFullScreen
         ></iframe>
       </div>
