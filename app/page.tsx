@@ -1,10 +1,19 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { status, data: session } = useSession();
+  const router = useRouter();
+
+  // 로그인 상태인 경우 /main 페이지로 리디렉션
+  useEffect(() => {
+    if (typeof window !== "undefined" && status === "authenticated") {
+      router.push("/");
+    }
+  }, [status, router]);
 
   // 로딩 중인 경우
   if (status === "loading") {

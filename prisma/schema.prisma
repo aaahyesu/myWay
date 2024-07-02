@@ -10,15 +10,70 @@ datasource db {
 model User {
   id    Int     @id @default(autoincrement())
   email String  @unique
-  name  String?
+  name  String  @unique
   posts Post[]
+  place Place[]
 }
-
-model Post {
+model Place {
   id        Int     @id @default(autoincrement())
   title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+  content   String
+  address   String
+  photo     String
+  // photo2    String
+  // photo3    String
+  // photo4    String
+  // photo5    String
+  open      String
+  close     String
+  tel       String
+  sns       String
+
+  user      User     @relation(fields: [username], references: [name], onDelete: Cascade)
+  username  String
+}
+model banner {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String
+  photo     String
+}
+
+
+model Post {
+  id             Int           @id @default(autoincrement())
+  title          String        
+  theme          String
+  startLocation  String
+  endLocation    String
+  place          String
+  content        String?       
+  photo          String?
+  coordinates    Coordinate[]
+  categories     PostCategory[]
+  published      Boolean       @default(false)
+  author         User          @relation(fields: [authorId], references: [id])
+  authorId       Int
+}
+
+model Coordinate {
+  id        Int     @id @default(autoincrement())
+  latitude  Float
+  longitude Float
+  postId    Int
+  post      Post    @relation(fields: [postId], references: [id])
+}
+
+model PostCategory {
+  postId     Int
+  categoryId Int
+  post       Post     @relation(fields: [postId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+  @@id([postId, categoryId])
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts PostCategory[]
 }

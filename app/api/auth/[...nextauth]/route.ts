@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
-import prisma from "@/app/lib/prisma";
+import prisma from "@/lib/prisma";
 
 // User 타입 정의
 type User = {

@@ -1,7 +1,9 @@
 "use client";
+import prisma from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
 import React from "react";
+import { signOut, useSession } from "next-auth/react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -16,11 +18,13 @@ import { Navigation, Autoplay } from "swiper/modules";
 import { Bars3CenterLeftIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 
 export default function Main() {
+  const { data: session } = useSession();
   return (
     <div
       style={{
         justifyContent: "center",
         alignItems: "center",
+        paddingBottom: "2rem",
       }}
     >
       {" "}
@@ -115,10 +119,10 @@ export default function Main() {
           className="w-8 h-8 mr-2"
         ></img>
         <div className="text-md text-left font-semibold text-gray-500 mt-1">
-          대전 광역시 유성구
+          {session?.user?.name} 트립마스터
         </div>
         <div className="text-xl font-extrabold text-gray-800 ml-2">
-          기반 추천 코스
+          를 위한 추천 코스
         </div>
       </div>
       <div className="w-full h-80 border-2 border-grey-400 rounded-lg mt-4 bg-gray-100 flex items-center justify-between px-4">
