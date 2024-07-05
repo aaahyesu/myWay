@@ -4,14 +4,16 @@ import prisma from "@/lib/prisma";
 
 export async function upload(formData: FormData) {
   const data = {
-    address: formData.get("address"),
     latitude: formData.get("latitude"),
     longitude: formData.get("longitude"),
+    address: formData.get("address"),
   };
-  
-  console.log(data)
-  
-  if ( data.address === null || data.latitude === null || data.longitude === null) {
+  console.log(data);
+  if (
+    data.address === null ||
+    data.latitude === null ||
+    data.longitude === null
+  ) {
     throw new Error("address are required fields.");
   }
   const address = data.address.toString();
@@ -27,4 +29,6 @@ export async function upload(formData: FormData) {
   });
 
   console.log("Coordinate created:", Coordinate);
+
+  return data;
 }
