@@ -61,9 +61,9 @@ model Coordinate {
   address   String
   latitude  String
   longitude String
-  // postId    Int?
-  // post      Post?    @relation(fields: [postId], references: [id])
-
+  name      String
+  // postId    Int
+  // post      Post    @relation(fields: [postId], references: [id])
 }
 
 model PostCategory {
