@@ -1,187 +1,193 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { GoogleMap, LoadScript, DirectionsRenderer } from '@react-google-maps/api';
-import { CldUploadWidget } from "next-cloudinary";
-import { CldImage } from "next-cloudinary";
+import React, { useState, useEffect } from "react";
+import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import Image from "next/image";
+import { upload } from "./action";
+import Link from "next/link";
 
-// Google Maps API 키
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_ROUTES_API; 
 
-interface CloudinaryResult {
-    public_id: string;
+const containerStyle = {
+  width: "100%",
+  height: "350px",
+};
+
+const defaultCenter = {
+  lat: 37.569227, // 서울의 좌표
+  lng: 126.9777256,
+  zoom: 16,
+};
+
+interface Coordinates {
+  id: string;
+  lat: number;
+  lng: number;
 }
 
-export default function Page()  {
-    const [publicIds, setPublicIds] = useState<string[]>([]);
-    const [locations, setLocations] = useState<string[]>(['', '', '', '', '']); // 장소 배열
-    const [responses, setResponses] = useState<any[]>([]); // DirectionsService 응답 배열
+const CurrentLocationMap: React.FC = () => {
+  const [currentPosition, setCurrentPosition] = useState<Coordinates | null>(null);
+  const [markers, setMarkers] = useState<Coordinates[]>([]);
 
-    // DirectionsService 응답을 받았을 때 호출될 콜백
-    const directionsCallback = (result: any, status: any, index: number) => {
-        if (status === 'OK') {
-            const updatedResponses = [...responses];
-            updatedResponses[index] = result;
-            setResponses(updatedResponses);
-        } else {
-            console.error(`Directions request failed due to ${status}`);
-        }
-    };
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "",
+  });
 
-    // 경로 검색 함수
-    const searchRoute = () => {
-        // 초기화
-        setResponses([]);
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentPosition({ id: "current", lat: latitude, lng: longitude });
+      });
+    }
+  }, []);
 
-        // DirectionsService를 통해 입력된 위치들 사이의 경로 검색
-        for (let i = 0; i < locations.length - 1; i++) {
-            const origin = locations[i];
-            const destination = locations[i + 1];
+  // 현재 위치 마커 추가 함수
+  const handleButtonClick = () => {
+    if (currentPosition) {
+      if (markers.length < 5) { // 추가된 조건
+        const newMarker = { ...currentPosition, id: `${Date.now()}` };
+        setMarkers([...markers, newMarker]);
+        console.log(`Marker added: id=${newMarker.id}, lat=${newMarker.lat}, lng=${newMarker.lng}`);
+      } else {
+        console.log("마커 개수는 최대 5개입니다."); // 추가된 경고 메시지
+      }
+    }
+  };
 
-            // Skip empty locations
-            if (!origin || !destination) {
-                continue;
-            }
+  // 지도에서 마커 클릭 시 마커 추가 함수
+  const handleMarkerClick = (event: google.maps.MapMouseEvent) => {
+    if (event.latLng) {
+      if (markers.length < 5) { // 추가된 조건
+        const newMarker = {
+          id: `${Date.now()}`,
+          lat: event.latLng.lat(),
+          lng: event.latLng.lng(),
+        };
+        setMarkers([...markers, newMarker]);
+        console.log(`Marker clicked: id=${newMarker.id}, lat=${newMarker.lat}, lng=${newMarker.lng}`);
+      } else {
+        console.log("마커 개수는 최대 5개입니다."); // 추가된 경고 메시지
+      }
+    } else {
+      console.error("Click event latLng is null");
+    }
+  };
 
-            const directionsService = new google.maps.DirectionsService();
-            const directionsServiceOptions = {
-                origin,
-                destination,
-                travelMode: google.maps.TravelMode.TRANSIT,
-            };
+  // 마커 초기화 함수
+  const clearMarkers = () => {
+    setMarkers([]);
+    console.log("모든 마커가 삭제되었습니다.");
+  };
+  
+  // 위도와 경도를 배열 형태로 변환
+  const latitudeArray = markers.map(marker => marker.lat);
+  const longitudeArray = markers.map(marker => marker.lng);
 
-            directionsService.route(directionsServiceOptions, (result, status) => directionsCallback(result, status, i));
-        }
-    };
-
-    // Input 변경 핸들러
-    const handleInputChange = (index: number, value: string) => {
-        const updatedLocations = [...locations];
-        updatedLocations[index] = value;
-        setLocations(updatedLocations);
-    };
-
-    // 초기화
-    useEffect(() => {
-        setLocations(['', '', '', '', '']);
-        setResponses([]);
-    }, []);
-
-    
-    const handleUpload = (result: any) => {
-        if (result.event === 'success') {
-          if (publicIds.length < 10) {
-            const info = result.info as CloudinaryResult;
-            setPublicIds((prevPublicIds) => [...prevPublicIds, info.public_id]);
-          } else {
-            alert('이미지 업로드는 10개까지 가능합니다.');
-          }
-        }
-      };
-
-    return (
-        <div className="py-10">
-            <input
-                className="w-full px-2 py-2 placeholder-gray-400 text-xl font-semibold border-b-[1.6px] border-gray-300 focus:border-gray-400 focus:outline-none"
-                type="text"
-                id="name"
-                name="name"
-                placeholder="제목 (20자 이내)"
-                maxLength={20}
-            /><div className="mb-10" />
-            <div className="items-center space-y-6 ">
-                <input
-                    className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="테마"
-                />
-
-                {locations.map((location, index) => (
-                    <div key={`location-${index}`}>
-                        <input
-                            className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
-                            type="text"
-                            id="name"
-                            name="name"
-                            placeholder="장소"
-                            value={location}
-                            onChange={(e) => handleInputChange(index, e.target.value)}
-                        />
-                    </div>
-                ))}
-                <button onClick={searchRoute}>경로 검색</button>
-                <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
-                    <GoogleMap
-                        mapContainerStyle={{ width: '100%', height: '400px' }}
-                        center={{ lat: 37.5665, lng: 126.9780 }}
-                        zoom={13} // 초기 줌 레벨
-                    >
-                        {/* DirectionsRenderer를 통해 모든 경로 표시 */}
-                        {responses.map((response, index) => (
-                            response && (
-                                <DirectionsRenderer
-                                    key={`directions-${index}`}
-                                    options={{ directions: response }}
-                                />
-                            )
-                        ))}
-                    </GoogleMap>
-                </LoadScript>
-                <textarea
-                    className="w-full p-3 text-base placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-gray-400  rounded-xl"
-                    rows={5}
-                    id="name"
-                    name="name"
-                    placeholder="상세 내용 (200자 이내)"
-                    maxLength={200}
-                />
-                <div className="text-gray-400 font-medium text-lg">사진 추가</div>
-                <div className="flex flex-col justify-center">
-                    <CldUploadWidget uploadPreset="kymakj5i" onUpload={handleUpload}>
-                        {({ open }) => (
-                            <button
-                                className="btn btn-primary w-24 h-24 rounded-md bg-gray-200 flex items-center justify-center"
-                                onClick={() => open()}
-                            >
-                                <div className="flex flex-col items-center"> {/* Wrap SVG icon and text */}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8 text-gray-400">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                                    </svg>
-                                    <span className="text-xs text-gray-400">{publicIds.length}/10</span> {/* Text */}
-                                </div>
-                            </button>
-                        )}
-                    </CldUploadWidget>
-                    <div className="mt-4 flex flex-wrap">
-                        {publicIds.map((publicId) => (
-                            <div key={publicId} className="mr-2 mb-2">
-                                <CldImage
-                                    src={publicId}
-                                    width={100}
-                                    height={100}
-                                    alt="Uploaded Image Not Found"
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <h1 className="text-gray-500 font-medium text-lg">추천 카테고리</h1>
-                <div className="flex">
-                    <div className="flex flex-grow items-center mb-4">
-                        <input id="default-checkbox1" type="checkbox" value="" className="w-4 h-4 bg-gray-100 border-gray-300 rounded"/>
-                        <label htmlFor="default-checkbox1" className="ms-2 text-base font-medium text-gray-500 dark:text-gray-300">체크박스</label>
-                    </div>
-                    <div className="flex flex-grow items-center mb-4">
-                        <input id="default-checkbox2" type="checkbox" value="" className="w-4 h-4 bg-gray-100 border-gray-300 rounded"/>
-                        <label htmlFor="default-checkbox2" className="ms-2 text-base font-medium text-gray-500 dark:text-gray-300">체크박스</label>
-                    </div>
-                </div>
-            </div>
-            <button className="w-full mt-4 py-2 bg-black text-base font-semibold text-white border rounded-lg">등록</button>
-            <p className="mb-24"></p>
+  return isLoaded ? (
+    <form action={upload}>
+      <div className="py-10 mb-20">
+        <h1 className="text-xl font-semibold mb-4">나만의 루트 만들기</h1>
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-md text-gray-400">원하는 위치에서 좌표 찍기 버튼을 눌러</h2>
+            <h2 className="text-md mb-4 text-gray-400">나만의 루트를 생성해보세요</h2>
+          </div>
         </div>
-    );
-}
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={currentPosition || defaultCenter}
+          zoom={currentPosition ? 15 : 5}
+          onClick={handleMarkerClick}
+        >
+          {currentPosition && <Marker position={currentPosition} />}
+          {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              position={marker}
+              animation={window.google.maps.Animation.BOUNCE}
+              icon={{
+                url: "/marker.png",
+                scaledSize: new window.google.maps.Size(50, 50),
+              }}
+            />
+          ))}
+        </GoogleMap>
+        <div className="text-center mt-4">
+          <div className="flex justify-between items-center">
+            <button
+              type="button"
+              className="flex items-center bg-gray-400 text-white py-2 px-4 rounded-full"
+              onClick={clearMarkers}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+                />
+              </svg>
+              <span className="ml-2">루트삭제</span>
+            </button>
+            {/* <Link href={`/write/${123}`} className=""> */}
+            <button
+              className="flex items-center bg-black text-white py-2 px-4 rounded-full"
+            >
+              <span className="mr-2">루트작성</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </button>
+            {/* </Link> */}
+          </div>
+          <button type="button" onClick={handleButtonClick}>
+            <Image
+              src="/foot.png"
+              alt="Description of the image"
+              width="120"
+              height="120"
+            />
+            <span className="text-base">좌표찍기</span>
+          </button>
+        </div>
+        <div className="marker-inputs mb-4">
+          <input
+            type="hidden"
+            id="latitude-array"
+            value={JSON.stringify(latitudeArray)}
+            name="latitude"
+          />
+          <input
+            type="hidden"
+            id="longitude-array"
+            value={JSON.stringify(longitudeArray)}
+            name="longitude"
+          />
+        </div>
+        
+      </div>
+    </form>
+  ) : (
+    <div>Loading...</div>
+  );
+};
+
+export default CurrentLocationMap;
