@@ -49,7 +49,7 @@ model Post {
   place          String
   content        String?       
   photo          String?
-  coordinates    Coordinate[]
+  // coordinates    Coordinate[]
   categories     PostCategory[]
   published      Boolean       @default(false)
   author         User          @relation(fields: [authorId], references: [id])
@@ -58,10 +58,10 @@ model Post {
 
 model Coordinate {
   id        Int     @id @default(autoincrement())
-  latitude  Float
-  longitude Float
-  postId    Int
-  post      Post    @relation(fields: [postId], references: [id])
+  latitude  String
+  longitude String
+  // postId    Int
+  // post      Post    @relation(fields: [postId], references: [id])
 }
 
 model PostCategory {
