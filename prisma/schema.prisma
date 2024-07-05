@@ -60,6 +60,7 @@ model Coordinate {
   id        Int     @id @default(autoincrement())
   latitude  String
   longitude String
+  name      String
   // postId    Int
   // post      Post    @relation(fields: [postId], references: [id])
 }
