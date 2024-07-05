@@ -1,9 +1,9 @@
 "use client";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import Image from "next/image";
 import React from "react";
-import { signOut, useSession } from "next-auth/react";
+import { getMorePlaces, getMoreBanners } from "./actions";
+import { signIn, signOut, useSession } from "next-auth/react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -16,9 +16,77 @@ import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 
 import { Bars3CenterLeftIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import ListPlace from "@/components/list-place";
+import ListBanner from "@/components/list-banner";
+
+import { useState, useEffect } from "react";
+
+type Place = {
+  id: number;
+  title: string;
+  address: string;
+  photo: string;
+};
+type Banner = {
+  id: number;
+  title: string;
+  content: string;
+  photo: string;
+};
+
+async function getPlaces() {
+  const places = await prisma.place.findMany({
+    select: {
+      id: true,
+      title: true,
+      photo: true,
+      address: true,
+    },
+  });
+
+  return places;
+}
+async function getBanners() {
+  const banners = await prisma.banner.findMany({
+    select: {
+      id: true,
+      title: true,
+      photo: true,
+      content: true,
+    },
+  });
+}
 
 export default function Main() {
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [page, setPage] = useState(1);
   const { data: session } = useSession();
+
+  useEffect(() => {
+    async function fetchPlaces() {
+      try {
+        const fetchedPlaces = await getMorePlaces(page, 1); // userId를 적절히 대체하세요
+        console.log(fetchedPlaces);
+        setPlaces(fetchedPlaces);
+      } catch (error) {
+        console.error("Error fetching places: ", error);
+      }
+    }
+    async function fetchBanners() {
+      try {
+        const fetchedBanners = await getMoreBanners(page, 1); // userId를 적절히 대체하세요
+        console.log(fetchedBanners);
+        setBanners(fetchedBanners);
+      } catch (error) {
+        console.error("Error fetching Banners: ", error);
+      }
+    }
+
+    fetchPlaces();
+    fetchBanners();
+  }, [page]);
+
   return (
     <div
       style={{
@@ -51,33 +119,13 @@ export default function Main() {
             disableOnInteraction: false, // 사용자 상호 작용 시 자동 재생 중지 여부
           }}
         >
-          {[1, 2, 3].map((index) => (
+          {banners.map((banner) => (
             <SwiperSlide
-              key={index}
+              key={banner.id}
               className="swiper-slide"
               style={{ marginRight: "12px" }}
             >
-              <div className="text-center border-2 border-gray-300 rounded-lg p-4 bg-slate-50">
-                <div className="flex justify-center items-center h-40 mt-2">
-                  <div className=" w-60">
-                    <Image
-                      src="/background.png"
-                      alt="/img"
-                      width={100}
-                      height={70}
-                      layout="fixed"
-                    />
-                  </div>
-                </div>
-                <div className="h-14 mt-5">
-                  <h2 className="text-center text-md font-semibold ">
-                    대전의 맛집 거리가 궁금하다면?
-                  </h2>
-                  <p className="text-center text-xs text-gray-500 mr-2 ml-2">
-                    성심당 맛있고, 꿈돌이 귀엽고, 가나다라마바사 아자차카타파하
-                  </p>
-                </div>
-              </div>
+              <ListBanner key={banner.id} {...banner} />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -146,23 +194,8 @@ export default function Main() {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4 mt-4">
-        {[1, 2, 3, 4].map((index) => (
-          <div key={index} className="flex flex-col items-center">
-            <Link href="/main/1">
-              <div className="w-42 h-32 rounded-xl overflow-hidden">
-                <Image
-                  src={`/placeSample.png`}
-                  alt={`Image ${index}`}
-                  width={170}
-                  height={130}
-                />
-              </div>
-            </Link>
-            <p className="text-left mt-2 font-semibold">최진엽 사브샤브</p>
-            <p className="text-center text-xs text-gray-500 mr-1">
-              유성구 궁동로18번길 40 2층
-            </p>
-          </div>
+        {places.map((place) => (
+          <ListPlace key={place.id} {...place} />
         ))}
       </div>
       <p className="mb-24"></p>
