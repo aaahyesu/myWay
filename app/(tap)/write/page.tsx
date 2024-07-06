@@ -47,15 +47,8 @@ const CurrentLocationMap: React.FC = () => {
     }
   }, []);
 
-  const fetchAddress = async (lat: number, lng: number) => {
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCDp_-bsh_ytVOqroVB-F95_fRhreBij6o`
-    );
-    const data = await response.json();
-    return data.results[0]?.formatted_address || "Unknown Location";
-  };
-
-  const handleButtonClick = async () => {
+  // 현재 위치 마커 추가 함수
+  const handleButtonClick = () => {
     if (currentPosition) {
       if (markers.length < 5) {
         const address = await fetchAddress(
