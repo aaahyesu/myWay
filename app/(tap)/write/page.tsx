@@ -8,7 +8,7 @@ import {
 } from "@react-google-maps/api";
 import Image from "next/image";
 import { upload } from "./action";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const containerStyle = {
   width: "100%",
@@ -36,9 +36,13 @@ const CurrentLocationMap: React.FC = () => {
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const mapRef = useRef<google.maps.Map | null>(null);
 
+  const router = useRouter();
+
+  const newKey = Math.floor(Math.random() * 10000) + Date.now();
+
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyCDp_-bsh_ytVOqroVB-F95_fRhreBij6o",
+    googleMapsApiKey: "api-key",
   });
 
   useEffect(() => {
@@ -53,7 +57,7 @@ const CurrentLocationMap: React.FC = () => {
 
   const fetchAddress = async (lat: number, lng: number) => {
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCDp_-bsh_ytVOqroVB-F95_fRhreBij6o`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.GOOGLE_ROUTES_API}`
     );
     const data = await response.json();
     return data.results[0]?.formatted_address || "Unknown Location";
@@ -85,7 +89,6 @@ const CurrentLocationMap: React.FC = () => {
     if (event.latLng) {
       if (markers.length < 5) {
         const lat = event.latLng.lat();
-        const lng = event.latLng.lng();
         const address = await fetchAddress(lat, lng);
         const newMarker = {
           id: `${Date.now()}`,
@@ -210,6 +213,7 @@ const CurrentLocationMap: React.FC = () => {
               </svg>
               <span className="ml-2">루트삭제</span>
             </button>
+            {/* <Link href="/write"> */}
             <button className="flex items-center bg-black text-white py-2 px-4 rounded-full">
               <span className="mr-2">루트작성</span>
               <svg
@@ -257,6 +261,7 @@ const CurrentLocationMap: React.FC = () => {
             value={JSON.stringify(addressArray)}
             name="address"
           />
+          <input type="hidden" name="key" value={newKey} />
         </div>
       </div>
     </form>

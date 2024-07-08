@@ -4,7 +4,8 @@ import { GoogleMap, LoadScript, DirectionsRenderer } from '@react-google-maps/ap
 import { CldUploadWidget } from "next-cloudinary";
 import { CldImage } from "next-cloudinary";
 import { upload } from "./action";
-
+import prisma from "@/lib/prisma";
+import { usePathname } from "next/navigation"
 // Google Maps API 키
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_ROUTES_API; 
 
@@ -16,6 +17,24 @@ export default function Page()  {
     const [publicIds, setPublicIds] = useState<string[]>([]);
     const [locations, setLocations] = useState<string[]>(['', '', '', '', '']); // 장소 배열
     const [responses, setResponses] = useState<any[]>([]); // DirectionsService 응답 배열
+
+    const path = usePathname();
+    const idstr = path.substring("/write/".length);
+    const id = parseInt(idstr);
+    console.log(id)
+
+    async function Coordinate() {
+        const coordinate = await prisma.coordinate.findUnique({
+          where: {
+              key: id,
+            },
+            select: {
+              id: true,
+              address: true,
+            },
+          });
+        return coordinate;
+      }
 
     // DirectionsService 응답을 받았을 때 호출될 콜백
     const directionsCallback = (result: any, status: any, index: number) => {
@@ -113,7 +132,7 @@ export default function Page()  {
                     </div>
                 ))}
                 <button onClick={searchRoute}>경로 검색</button>
-                <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+                <LoadScript googleMapsApiKey="">
                     <GoogleMap
                         mapContainerStyle={{ width: '100%', height: '400px' }}
                         center={{ lat: 37.5665, lng: 126.9780 }}
