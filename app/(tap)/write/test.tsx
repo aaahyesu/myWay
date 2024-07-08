@@ -1,11 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import {
-  GoogleMap,
-  useJsApiLoader,
-  Marker,
-  Polyline,
-} from "@react-google-maps/api";
+import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import Image from "next/image";
 import { upload } from "./action";
 import { useRouter } from "next/navigation";
@@ -42,13 +37,14 @@ const CurrentLocationMap: React.FC = () => {
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "api-key",
+    googleMapsApiKey: "",
   });
 
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
+        console.log(position);
         setCurrentPosition({ id: "current", lat: latitude, lng: longitude });
         setMapCenter({ lat: latitude, lng: longitude, zoom: 15 });
       });
@@ -57,7 +53,7 @@ const CurrentLocationMap: React.FC = () => {
 
   const fetchAddress = async (lat: number, lng: number) => {
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key="api-key"`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=`
     );
     const data = await response.json();
     return data.results[0]?.formatted_address || "Unknown Location";
@@ -89,7 +85,6 @@ const CurrentLocationMap: React.FC = () => {
     if (event.latLng) {
       if (markers.length < 5) {
         const lat = event.latLng.lat();
-        const lng = event.latLng.lng();
         const address = await fetchAddress(lat, lng);
         const newMarker = {
           id: `${Date.now()}`,
@@ -111,7 +106,6 @@ const CurrentLocationMap: React.FC = () => {
 
   const clearMarkers = () => {
     setMarkers([]);
-    console.log(setMarkers);
     console.log("모든 마커가 삭제되었습니다.");
   };
 
@@ -127,13 +121,6 @@ const CurrentLocationMap: React.FC = () => {
         setCurrentPosition(newCenter);
       }
     }
-  };
-
-  const generatePolylinePath = () => {
-    return markers.map((marker) => ({
-      lat: marker.lat,
-      lng: marker.lng,
-    }));
   };
 
   const latitudeArray = markers.map((marker) => marker.lat);
@@ -180,16 +167,6 @@ const CurrentLocationMap: React.FC = () => {
               }}
             />
           ))}
-          {markers.length > 1 && (
-            <Polyline
-              path={generatePolylinePath()}
-              options={{
-                strokeColor: "#FF0000",
-                strokeOpacity: 1,
-                strokeWeight: 2,
-              }}
-            />
-          )}
         </GoogleMap>
         <div className="text-center mt-4">
           <div className="flex justify-between items-center">
@@ -219,6 +196,7 @@ const CurrentLocationMap: React.FC = () => {
               onClick={() => router.push(`/write/${newKey}`)}
             >
               <span className="mr-2">루트작성</span>
+
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

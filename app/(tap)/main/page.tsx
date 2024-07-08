@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 import { getMorePlaces, getMoreBanners } from "./actions";
 import { signIn, signOut, useSession } from "next-auth/react";
+
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 
