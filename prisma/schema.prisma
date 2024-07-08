@@ -61,7 +61,6 @@ model Coordinate {
   address   String
   latitude  String
   longitude String
-  name      String
   // postId    Int
   // post      Post    @relation(fields: [postId], references: [id])
 }
