@@ -1,17 +1,12 @@
-"use client"
+"use client";
 import React, { useState, useEffect, useRef } from "react";
-import {
-  GoogleMap,
-  LoadScript,
-  Polyline,
-  Marker,
-} from "@react-google-maps/api";
 import { CldUploadWidget } from "next-cloudinary";
 import { CldImage } from "next-cloudinary";
 import { upload } from "./action";
 import { getMapKey } from "../action";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 // Google Maps API 키
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
@@ -46,6 +41,8 @@ export default function Page() {
       }
     }
   };
+
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchCoordinates() {
@@ -124,6 +121,55 @@ export default function Page() {
     }
   };
 
+  useEffect(() => {
+    if (coordinates.length > 0) {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=geometry,drawing,places`;
+      script.onload = () => initializeMap();
+      document.body.appendChild(script);
+
+      return () => {
+        document.body.removeChild(script);
+      };
+    }
+  }, [coordinates]);
+
+  const initializeMap = () => {
+    if (coordinates.length > 0) {
+      const map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
+        center: { lat: 37.5665, lng: 126.978 }, // 초기 중심 위치
+        zoom: 13, // 초기 줌 레벨
+      });
+
+      mapRef.current = map;
+
+      const bounds = new google.maps.LatLngBounds();
+      coordinates.forEach((coord) => {
+        bounds.extend(new google.maps.LatLng(coord.latitude, coord.longitude));
+      });
+      map.fitBounds(bounds);
+
+      coordinates.forEach((coord, index) => {
+        new google.maps.Marker({
+          position: { lat: coord.latitude, lng: coord.longitude },
+          map: map,
+          label: `${index + 1}`,
+        });
+      });
+
+      if (coordinates.length > 1) {
+        new google.maps.Polyline({
+          path: coordinates.map((coord) => ({ lat: coord.latitude, lng: coord.longitude })),
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+          map: map,
+        });
+      }
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="py-10 mb-24">
@@ -175,37 +221,11 @@ export default function Page() {
               )}
             </div>
           ))}
-          <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
-            <GoogleMap
-              mapContainerStyle={{ width: "100%", height: "400px" }}
-              center={{ lat: 37.5665, lng: 126.978 }}
-              zoom={13}
-              onLoad={(map) => {
-                mapRef.current = map;
-              }}
-            >
-              {coordinates.length > 1 && (
-                <Polyline
-                  path={coordinates.map((coord) => ({
-                    lat: coord.latitude,
-                    lng: coord.longitude,
-                  }))}
-                  options={{
-                    strokeColor: "#FF0000",
-                    strokeOpacity: 1,
-                    strokeWeight: 2,
-                  }}
-                />
-              )}
-              {coordinates.map((coord, index) => (
-                <Marker
-                  key={`marker-${index}`}
-                  position={{ lat: coord.latitude, lng: coord.longitude }}
-                  label={`${index + 1}`}
-                />
-              ))}
-            </GoogleMap>
-          </LoadScript>
+          <div
+            id="map"
+            style={{ width: "100%", height: "400px" }}
+            className="bg-gray-200"
+          ></div>
           <textarea
             className="w-full p-4 text-base placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-gray-400  rounded-xl"
             rows={9}
@@ -275,7 +295,10 @@ export default function Page() {
           value={key}
           type="hidden"
         ></input>
-        <button className="w-full mt-4 py-2 bg-black text-base font-semibold text-white border rounded-lg">
+        <button
+          className="w-full mt-4 py-2 bg-black text-base font-semibold text-white border rounded-lg"
+          onClick={() => router.push(`/main`)}
+        >
           등록
         </button>
         <p className="mb-3 text-lg leading-relaxed text-gray-600"></p>
