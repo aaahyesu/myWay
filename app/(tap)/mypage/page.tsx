@@ -1,46 +1,81 @@
-import type { NextPage } from "next";
-import React from 'react';
+"use client";
+import React from "react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+export default function Mypage() {
+  const { status, data: session } = useSession();
+  const router = useRouter();
 
+  const handleSignOut = () => {
+    signOut();
+    router.push("/");
+  };
 
-const Mypage: NextPage = () => {
-    return (
-        <div className="py-10">
-          <div className="px-2 flex space-x-2 mt-4 mb-10">
-                <img
-                    className="inline-block h-8 w-8 rounded-full ring-2 ring-white"
-                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                />
-                <h1 className="flex items-center text-base">Name</h1>
+  const handleGoBack = () => {
+    router.back();
+  };
+
+  return (
+    <div className="bg-white w-full flex flex-col">
+      <div className="flex items-center justify-between px-4 py-2 border-b">
+        <button onClick={handleGoBack} className="text-xs text-blue-500">
+          뒤로가기
+        </button>
+        <h1 className="text-lg font-medium">마이페이지</h1>
+        <div></div> {/* To balance the space with the back button */}
+      </div>
+
+      <div className="flex justify-left mx-8 my-10" style={{ height: "100px" }}>
+        <img
+          src="/banner2.jpeg"
+          alt="Profile"
+          className="rounded-full"
+          style={{ width: "100px", height: "100px" }}
+        />
+        <div className="flex-col mx-6 my-5 font-Nanum">
+          <h2 style={{ fontSize: "24px" }}>{session?.user?.name}</h2>
+          <div className="flex justify-center mb-2 my-1">
+            <button
+              className="bg-white rounded-lg border text-gray-500 text-xs font-medium text-center hover:bg-gray-100 hover:text-black px-3 py-1.5"
+              onClick={handleSignOut}
+            >
+              My Way Logout
+            </button>
           </div>
-          <Link href="/mypage/save">
-          <div className="w-full flex px-2 py-1.5 text-base hover hover:text-gray-500 placeholder-gray-400 border-b border-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-            </svg>
-            <span className="px-2">저장 목록</span>
-          </div>
-          </Link>
-          <Link href="/mypage/like">
-          <div className="mt-5 w-full flex px-2 py-1.5 text-base hover hover:text-gray-500 placeholder-gray-400 border-b border-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-            </svg>
-            <span className="px-2">좋아요 목록</span>
-          </div>
-          </Link>
-          <Link href="/mypage/mypath">
-          <div className="mt-5 w-full flex px-2 py-1.5 text-base hover hover:text-gray-500 placeholder-gray-400 border-b border-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
-            </svg>
-            <span className="px-2">나의 경로 목록</span>
-          </div>
-          </Link>
         </div>
-    );
-}
+      </div>
 
-export default Mypage;
+      <div className="flex justify-between mx-8 mb-10">
+        <Link href="/mypage/save">
+          <div className="flex flex-col items-center">
+            <span className="text-gray-500" style={{ fontSize: "16px" }}>
+              저장 목록
+            </span>
+            <p className="text-lg">3개</p>
+            <p className="text-xs text-gray-400">자세히 보기</p>
+          </div>
+        </Link>
+        <Link href="/mypage/like">
+          <div className="flex flex-col items-center">
+            <span className="text-gray-500" style={{ fontSize: "16px" }}>
+              좋아요 목록
+            </span>
+            <p className="text-lg">5개</p>
+            <p className="text-xs text-gray-400">자세히 보기</p>
+          </div>
+        </Link>
+        <Link href="/mypage/mypath">
+          <div className="flex flex-col items-center">
+            <span className="text-gray-500" style={{ fontSize: "16px" }}>
+              나의 경로 목록
+            </span>
+            <p className="text-lg">7개</p>
+            <p className="text-xs text-gray-400">자세히 보기</p>
+          </div>
+        </Link>
+      </div>
+    </div>
+  );
+}

@@ -6,6 +6,7 @@ import {
   Marker,
   Polyline,
 } from "@react-google-maps/api";
+
 import Image from "next/image";
 import { upload } from "./action";
 import { useRouter } from "next/navigation";
@@ -57,7 +58,7 @@ const CurrentLocationMap: React.FC = () => {
 
   const fetchAddress = async (lat: number, lng: number) => {
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key="api-key"`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=api-key`
     );
     const data = await response.json();
     return data.results[0]?.formatted_address || "Unknown Location";

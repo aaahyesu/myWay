@@ -11,7 +11,7 @@ export default function Home() {
   // 로그인 상태인 경우 /main 페이지로 리디렉션
   useEffect(() => {
     if (typeof window !== "undefined" && status === "authenticated") {
-      router.push("/");
+      router.push("/main");
     }
   }, [status, router]);
 

@@ -2,6 +2,20 @@
 
 import prisma from "@/lib/prisma";
 
+export async function getMapKey(page: number, userId: number) {
+  const keys = await prisma.coordinate.findMany({
+    select: {
+      id: true,
+      key: true,
+      address: true,
+      latitude: true,
+      longitude: true,
+    },
+  });
+
+  return keys;
+}
+
 export async function upload(formData: FormData) {
   const data = {
     latitude: formData.get("latitude"),
@@ -9,25 +23,24 @@ export async function upload(formData: FormData) {
     address: formData.get("address"),
     key: formData.get("key"),
   };
-  console.log(data);
+
   if (
     data.address === null ||
     data.latitude === null ||
     data.longitude === null ||
     data.key === null
   ) {
-    throw new Error("address are required fields.");
+    throw new Error(
+      "Address, latitude, longitude, and key are required fields."
+    );
   }
+
   const address = data.address.toString();
   const latitude = data.latitude.toString();
   const longitude = data.longitude.toString();
-  const key = Number(data.key);
+  const key = BigInt(data.key as string); // Convert key to BigInt
 
-  if (isNaN(key)) {
-    throw new Error("Key must be a number.");
-  }
-
-  const Coordinate = await prisma.coordinate.create({
+  const coordinate = await prisma.coordinate.create({
     data: {
       address: address,
       latitude: latitude,
@@ -36,7 +49,7 @@ export async function upload(formData: FormData) {
     },
   });
 
-  console.log("Coordinate created:", Coordinate);
+  console.log("Coordinate created:", coordinate);
 
   return data;
 }
