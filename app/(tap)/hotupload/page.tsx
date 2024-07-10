@@ -6,14 +6,15 @@ import { CldUploadWidget } from "next-cloudinary";
 import { CldImage } from "next-cloudinary";
 import { uploadSpot } from "./action";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface CloudinaryResult {
   public_id: string;
 }
 
-const HotUpload: NextPage = () => {
+export default function HotUpload() {
   const [publicIds, setPublicIds] = useState<string[]>([]);
-
+  const router = useRouter();
   const { status, data: session } = useSession();
 
   if (status === "loading") {
@@ -234,7 +235,7 @@ const HotUpload: NextPage = () => {
             />
           </div>
         </div>
-        <button className="w-full mt-10 py-2 text-lg font-semibold bg-black text-white border rounded-lg">
+        <button className="w-full mt-10 py-2 text-lg font-semibold bg-black text-white border rounded-lg" onClick={() => router.push(`/main`)}> 
           등록
         </button>
         <p className="mb-24"></p>
@@ -242,5 +243,3 @@ const HotUpload: NextPage = () => {
     </form>
   );
 };
-
-export default HotUpload;

@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 
-export async function getMapKey(page: number, userId: number) {
+export async function getMapKey() {
   const keys = await prisma.coordinate.findMany({
     select: {
       id: true,

@@ -29,7 +29,7 @@ interface Coordinates {
   address?: string;
 }
 
-const CurrentLocationMap: React.FC = () => {
+export default function Write() {
   const [currentPosition, setCurrentPosition] = useState<Coordinates | null>(
     null
   );
@@ -40,10 +40,10 @@ const CurrentLocationMap: React.FC = () => {
   const router = useRouter();
 
   const newKey = Math.floor(Math.random() * 10000) + Date.now();
-
+  const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "api-key",
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
   });
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const CurrentLocationMap: React.FC = () => {
 
   const fetchAddress = async (lat: number, lng: number) => {
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=api-key`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`
     );
     const data = await response.json();
     return data.results[0]?.formatted_address || "Unknown Location";
@@ -66,54 +66,20 @@ const CurrentLocationMap: React.FC = () => {
 
   const handleButtonClick = async () => {
     if (currentPosition) {
-      if (markers.length < 5) {
-        const address = await fetchAddress(
-          currentPosition.lat,
-          currentPosition.lng
-        );
-        const newMarker = {
-          ...currentPosition,
-          id: `${Date.now()}`,
-          address: address,
-        };
-        setMarkers([...markers, newMarker]);
-        console.log(
-          `Marker added: id=${newMarker.id}, lat=${newMarker.lat}, lng=${newMarker.lng}, address=${newMarker.address}`
-        );
-      } else {
-        console.log("마커 개수는 최대 5개입니다.");
-      }
+      const address = await fetchAddress(
+        currentPosition.lat,
+        currentPosition.lng
+      );
+      const newMarker = {
+        ...currentPosition,
+        id: `${Date.now()}`,
+        address: address,
+      };
+      setMarkers([...markers, newMarker]);
+      console.log(
+        `Marker added: id=${newMarker.id}, lat=${newMarker.lat}, lng=${newMarker.lng}, address=${newMarker.address}`
+      );
     }
-  };
-
-  const handleMarkerClick = async (event: google.maps.MapMouseEvent) => {
-    if (event.latLng) {
-      if (markers.length < 5) {
-        const lat = event.latLng.lat();
-        const lng = event.latLng.lng();
-        const address = await fetchAddress(lat, lng);
-        const newMarker = {
-          id: `${Date.now()}`,
-          lat,
-          lng,
-          address: address,
-        };
-        setMarkers([...markers, newMarker]);
-        console.log(
-          `Marker clicked: id=${newMarker.id}, lat=${newMarker.lat}, lng=${newMarker.lng}, address=${newMarker.address}`
-        );
-      } else {
-        console.log("마커 개수는 최대 5개입니다.");
-      }
-    } else {
-      console.error("Click event latLng is null");
-    }
-  };
-
-  const clearMarkers = () => {
-    setMarkers([]);
-    console.log(setMarkers);
-    console.log("모든 마커가 삭제되었습니다.");
   };
 
   const handleCenterChanged = () => {
@@ -159,7 +125,6 @@ const CurrentLocationMap: React.FC = () => {
           mapContainerStyle={containerStyle}
           center={mapCenter}
           zoom={mapCenter.zoom}
-          onClick={handleMarkerClick}
           onLoad={(map) => {
             mapRef.current = map;
           }}
@@ -197,7 +162,7 @@ const CurrentLocationMap: React.FC = () => {
             <button
               type="button"
               className="flex items-center bg-gray-400 text-white py-2 px-4 rounded-full"
-              onClick={clearMarkers}
+              onClick={() => window.location.reload()}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -273,5 +238,3 @@ const CurrentLocationMap: React.FC = () => {
     <div>Loading...</div>
   );
 };
-
-export default CurrentLocationMap;

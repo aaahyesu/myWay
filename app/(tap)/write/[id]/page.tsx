@@ -1,90 +1,40 @@
-"use client";
-import React, { useState, useEffect } from "react";
+"use client"
+import React, { useState, useEffect, useRef } from "react";
 import {
   GoogleMap,
   LoadScript,
-  DirectionsRenderer,
+  Polyline,
+  Marker,
 } from "@react-google-maps/api";
 import { CldUploadWidget } from "next-cloudinary";
 import { CldImage } from "next-cloudinary";
 import { upload } from "./action";
 import { getMapKey } from "../action";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 // Google Maps API 키
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_ROUTES_API_KEY;
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
 
 interface CloudinaryResult {
   public_id: string;
 }
 
 type Coordinates = {
-  id: number;
   address: string;
-  latitude: string;
-  longitude: string;
-  key: bigint;
+  latitude: number;
+  longitude: number;
 };
 
 export default function Page() {
   const [publicIds, setPublicIds] = useState<string[]>([]);
-  const [locations, setLocations] = useState<string[]>(["", "", "", "", ""]); // 장소 배열
-  const [responses, setResponses] = useState<any[]>([]); // DirectionsService 응답 배열
-  const [keys, setKeys] = useState<Coordinates[]>([]);
-  const [page, setPage] = useState(1);
   const [coordinates, setCoordinates] = useState<Coordinates[]>([]);
+  const [placeNames, setPlaceNames] = useState<string[]>([]); // 장소명 배열 상태
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const { status, data: session } = useSession();
 
   const path = usePathname();
-  const idstr = path.substring("/write/".length);
-  const id = parseInt(idstr);
-  const router = useRouter();
-
-  // DirectionsService 응답을 받았을 때 호출될 콜백
-  const directionsCallback = (result: any, status: any, index: number) => {
-    if (status === "OK") {
-      const updatedResponses = [...responses];
-      updatedResponses[index] = result;
-      setResponses(updatedResponses);
-    } else {
-      console.error(`Directions request failed due to ${status}`);
-    }
-  };
-  console.log;
-
-  // 경로 검색 함수
-  const searchRoute = () => {
-    // 초기화
-    setResponses([]);
-
-    // DirectionsService를 통해 입력된 위치들 사이의 경로 검색
-    for (let i = 0; i < locations.length - 1; i++) {
-      const origin = locations[i];
-      const destination = locations[i + 1];
-
-      // Skip empty locations
-      if (!origin || !destination) {
-        continue;
-      }
-
-      const directionsService = new google.maps.DirectionsService();
-      const directionsServiceOptions = {
-        origin,
-        destination,
-        travelMode: google.maps.TravelMode.TRANSIT,
-      };
-
-      directionsService.route(directionsServiceOptions, (result, status) =>
-        directionsCallback(result, status, i)
-      );
-    }
-  };
-
-  // Input 변경 핸들러
-  const handleInputChange = (index: number, value: string) => {
-    const updatedLocations = [...locations];
-    updatedLocations[index] = value;
-    setLocations(updatedLocations);
-  };
+  const key = path.substring("/write/".length);
 
   const handleUpload = (result: any) => {
     if (result.event === "success") {
@@ -100,32 +50,83 @@ export default function Page() {
   useEffect(() => {
     async function fetchCoordinates() {
       try {
-        const fetchedCoordinates = await getMapKey(page, 1);
+        const fetchedCoordinates = await getMapKey();
         const filteredCoordinates = fetchedCoordinates.filter(
-          (coord) => coord.key === BigInt(id)
+          (coord) => coord.key === BigInt(key)
         );
-        setCoordinates(filteredCoordinates);
+
+        if (filteredCoordinates.length > 0) {
+          const addresses = JSON.parse(filteredCoordinates[0].address);
+          const latitudes = JSON.parse(filteredCoordinates[0].latitude);
+          const longitudes = JSON.parse(filteredCoordinates[0].longitude);
+
+          const formattedCoordinates = addresses.map(
+            (address: string, index: number) => ({
+              address,
+              latitude: latitudes[index],
+              longitude: longitudes[index],
+            })
+          );
+          setCoordinates(formattedCoordinates);
+        }
       } catch (error) {
         console.error("Error fetching coordinates: ", error);
       }
     }
-
     fetchCoordinates();
-  }, [page]);
+  }, [key]);
 
-  console.log(coordinates);
+  useEffect(() => {
+    if (mapRef.current && coordinates.length > 0) {
+      const bounds = new google.maps.LatLngBounds();
+      coordinates.forEach((coord) => {
+        bounds.extend(new google.maps.LatLng(coord.latitude, coord.longitude));
+      });
+      mapRef.current.fitBounds(bounds);
+    }
+  }, [coordinates]);
+
+  const handlePlaceNameChange = (index: number, value: string) => {
+    setPlaceNames((prevNames) => {
+      const newNames = [...prevNames];
+      newNames[index] = value;
+      return newNames;
+    });
+
+    // 장소명이 입력될 때마다 coordinates 상태 업데이트
+    setCoordinates((prevCoordinates) => {
+      const newCoordinates = [...prevCoordinates];
+      if (newCoordinates[index]) {
+        newCoordinates[index].address = value;
+      }
+      return newCoordinates;
+    });
+  };
+
+  if (status === "loading") {
+    return null; // 로딩 중에는 아무것도 표시하지 않음
+  }
+
+  if (!session?.user?.name) {
+    throw new Error("User name not found in session");
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      const formData = new FormData(event.currentTarget);
+      formData.append("names", JSON.stringify(placeNames));
+      const response = await upload(formData);
+      console.log("Upload successful", response);
+    } catch (error) {
+      console.error("Error uploading data:", error);
+    }
+  };
 
   return (
-    <form action={upload}>
-      <ul>
-        {coordinates.map((coord) => (
-          <li key={coord.id}>
-            Address: {coord.address}, Latitude: {coord.latitude}, Longitude:{" "}
-            {coord.longitude}
-          </li>
-        ))}
-      </ul>
-      <div className="py-10">
+    <form onSubmit={handleSubmit}>
+      <div className="py-10 mb-24">
         <input
           className="w-full px-2 py-2 placeholder-gray-400 text-xl font-semibold border-b-[1.6px] border-gray-300 focus:border-gray-400 focus:outline-none"
           type="text"
@@ -133,56 +134,86 @@ export default function Page() {
           name="title"
           placeholder="제목 (20자 이내)"
           maxLength={20}
+          required
         />
         <div className="mb-10" />
         <div className="items-center space-y-6 ">
-          <input
+          <select
             className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
-            type="text"
             id="theme"
             name="theme"
-            placeholder="테마"
-          />
+            required
+          >
+            <option value="" disabled selected>
+              테마를 선택하세요
+            </option>
+            <option value="맛집">맛집</option>
+            <option value="카페">카페</option>
+            <option value="관광">관광</option>
+            <option value="핫플">핫플</option>
+            <option value="힐링">힐링</option>
+            <option value="여행">여행</option>
+          </select>
 
-          {locations.map((location, index) => (
-            <div key={`location-${index}`}>
-              <input
-                className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
-                type="text"
-                id="name"
-                name="name"
-                placeholder="장소"
-                value={location}
-                onChange={(e) => handleInputChange(index, e.target.value)}
-              />
+          {coordinates.map((_, index) => (
+            <div key={`${index}`}>
+              {coordinates[index] && (
+                <div>
+                  <input
+                    className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
+                    type="text"
+                    id={`name-${index}`}
+                    name={`name-${index}`}
+                    placeholder={`${index + 1} 장소명 `}
+                    value={placeNames[index] || ""}
+                    onChange={(e) =>
+                      handlePlaceNameChange(index, e.target.value)
+                    }
+                    required
+                  />
+                </div>
+              )}
             </div>
           ))}
-          <button onClick={searchRoute}>경로 검색</button>
-          <LoadScript googleMapsApiKey="api-key">
+          <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
             <GoogleMap
               mapContainerStyle={{ width: "100%", height: "400px" }}
               center={{ lat: 37.5665, lng: 126.978 }}
-              zoom={13} // 초기 줌 레벨
+              zoom={13}
+              onLoad={(map) => {
+                mapRef.current = map;
+              }}
             >
-              {/* DirectionsRenderer를 통해 모든 경로 표시 */}
-              {responses.map(
-                (response, index) =>
-                  response && (
-                    <DirectionsRenderer
-                      key={`directions-${index}`}
-                      options={{ directions: response }}
-                    />
-                  )
+              {coordinates.length > 1 && (
+                <Polyline
+                  path={coordinates.map((coord) => ({
+                    lat: coord.latitude,
+                    lng: coord.longitude,
+                  }))}
+                  options={{
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 1,
+                    strokeWeight: 2,
+                  }}
+                />
               )}
+              {coordinates.map((coord, index) => (
+                <Marker
+                  key={`marker-${index}`}
+                  position={{ lat: coord.latitude, lng: coord.longitude }}
+                  label={`${index + 1}`}
+                />
+              ))}
             </GoogleMap>
           </LoadScript>
           <textarea
-            className="w-full p-3 text-base placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-gray-400  rounded-xl"
-            rows={5}
+            className="w-full p-4 text-base placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-gray-400  rounded-xl"
+            rows={9}
             id="content"
             name="content"
             placeholder="상세 내용 (200자 이내)"
             maxLength={200}
+            required
           />
           <div className="text-gray-400 font-medium text-lg">사진 추가</div>
           <div className="flex flex-col justify-center">
@@ -191,10 +222,9 @@ export default function Page() {
                 <button
                   className="btn btn-primary w-24 h-24 rounded-md bg-gray-200 flex items-center justify-center"
                   onClick={() => open()}
+                  type="button"
                 >
                   <div className="flex flex-col items-center">
-                    {" "}
-                    {/* Wrap SVG icon and text */}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -211,8 +241,7 @@ export default function Page() {
                     </svg>
                     <span className="text-xs text-gray-400">
                       {publicIds.length}/10
-                    </span>{" "}
-                    {/* Text */}
+                    </span>
                   </div>
                 </button>
               )}
@@ -230,11 +259,26 @@ export default function Page() {
               ))}
             </div>
           </div>
+          {publicIds.length > 0 && (
+            <input type="hidden" name="photo" id="photo" value={publicIds} />
+          )}
         </div>
+        <input
+          name="username"
+          id="username"
+          value={session.user.name}
+          type="hidden"
+        />
+        <input
+          name="key"
+          id="key"
+          value={key}
+          type="hidden"
+        ></input>
         <button className="w-full mt-4 py-2 bg-black text-base font-semibold text-white border rounded-lg">
           등록
         </button>
-        <p className="mb-24"></p>
+        <p className="mb-3 text-lg leading-relaxed text-gray-600"></p>
       </div>
     </form>
   );

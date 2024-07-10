@@ -14,16 +14,13 @@ model User {
   posts Post[]
   place Place[]
 }
+
 model Place {
   id        Int     @id @default(autoincrement())
   title     String
   content   String
   address   String
   photo     String
-  // photo2    String
-  // photo3    String
-  // photo4    String
-  // photo5    String
   open      String
   close     String
   tel       String
@@ -44,15 +41,11 @@ model Post {
   id             Int           @id @default(autoincrement())
   title          String        
   theme          String
-  startLocation  String
-  endLocation    String
-  place          String
-  content        String?       
-  photo          String?
-  categories     PostCategory[]
-  published      Boolean       @default(false)
-  author         User          @relation(fields: [authorId], references: [id])
-  authorId       Int
+  content        String       
+  photo          String
+  coordinate     Coordinate[]
+  author         User         @relation(fields: [authorname], references: [name], onDelete: Cascade)
+  authorname     String
 }
 
 model Coordinate {
@@ -61,20 +54,8 @@ model Coordinate {
   latitude  String
   longitude String
   key       BigInt  @unique
-  // postId    Int
-  // post      Post    @relation(fields: [postId], references: [id])
+  name      String?
+  postId    Int?
+  post      Post?    @relation(fields: [postId], references: [id])
 }
 
-model PostCategory {
-  postId     Int
-  categoryId Int
-  post       Post     @relation(fields: [postId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
-  @@id([postId, categoryId])
-}
-
-model Category {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  posts PostCategory[]
-}
