@@ -81,6 +81,41 @@ export default function HotUpload() {
               </button>
             )}
           </CldUploadWidget>
+          <div className="relative mt-5">
+            <select
+              className="block w-full py-3 pl-3 pr-10 leading-tight bg-white border border-gray-300 rounded-md shadow-sm appearance-none text-gray-500"
+              id="category"
+              name="category"
+              aria-label="카테고리선택"
+              required
+            >
+              <option disabled selected hidden>
+                카테고리를 선택하세요
+              </option>
+              <option value="맛집">맛집</option>
+              <option value="카페">카페</option>
+              <option value="관광">관광</option>
+              <option value="핫플">핫플</option>
+              <option value="힐링">힐링</option>
+              <option value="여행">여행</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </div>
+          </div>
+
           <div className="mt-4 flex flex-wrap">
             {publicIds.map((publicId, index) => (
               <div key={publicId} className="mr-2 mb-2">
@@ -235,11 +270,14 @@ export default function HotUpload() {
             />
           </div>
         </div>
-        <button className="w-full mt-10 py-2 text-lg font-semibold bg-black text-white border rounded-lg" onClick={() => router.push(`/main`)}> 
+        <button
+          className="w-full mt-10 py-2 text-lg font-semibold bg-black text-white border rounded-lg"
+          onClick={() => router.push(`/main`)}
+        >
           등록
         </button>
         <p className="mb-24"></p>
       </div>
     </form>
   );
-};
+}

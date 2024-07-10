@@ -3,6 +3,8 @@ import React from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useEffect } from "react";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export default function Mypage() {
   const { status, data: session } = useSession();
@@ -16,29 +18,35 @@ export default function Mypage() {
   const handleGoBack = () => {
     router.back();
   };
+  // 로그아웃 상태인 경우 / 페이지로 리디렉션
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/");
+    }
+  }, [status, router]);
 
   return (
     <div className="bg-white w-full flex flex-col">
       <div className="flex items-center justify-between px-4 py-2 border-b">
-        <button onClick={handleGoBack} className="text-xs text-blue-500">
-          뒤로가기
+        <button onClick={handleGoBack} title="뒤로가기">
+          <ChevronLeftIcon className="w-6 h-6 text-gray-700" />
         </button>
-        <h1 className="text-lg font-medium">마이페이지</h1>
-        <div></div> {/* To balance the space with the back button */}
+        <h1 className="text-lg font-medium">마이 페이지</h1>
+        <div></div>
       </div>
 
       <div className="flex justify-left mx-8 my-10" style={{ height: "100px" }}>
         <img
           src="/banner2.jpeg"
           alt="Profile"
-          className="rounded-full"
+          className="rounded-full shadow-md"
           style={{ width: "100px", height: "100px" }}
         />
-        <div className="flex-col mx-6 my-5 font-Nanum">
+        <div className="flex-col mx-6 my-5">
           <h2 style={{ fontSize: "24px" }}>{session?.user?.name}</h2>
           <div className="flex justify-center mb-2 my-1">
             <button
-              className="bg-white rounded-lg border text-gray-500 text-xs font-medium text-center hover:bg-gray-100 hover:text-black px-3 py-1.5"
+              className="bg-black rounded-lg border mt-1 text-white text-xs shadow-md font-medium text-center hover:bg-gray-100 hover:text-black px-3 py-1.5"
               onClick={handleSignOut}
             >
               My Way Logout

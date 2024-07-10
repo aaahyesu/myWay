@@ -13,12 +13,14 @@ export async function uploadSpot(formData: FormData) {
     tel: formData.get("tel")?.toString() || "",
     sns: formData.get("sns")?.toString() || "",
     username: formData.get("username")?.toString() || "",
+    category: formData.get("theme")?.toString() || "",
   };
 
   const place = await prisma.place.create({
     data: {
       title: data.title,
       content: data.content,
+      category: data.category,
       address: data.address,
       open: data.open,
       close: data.close,
@@ -32,21 +34,5 @@ export async function uploadSpot(formData: FormData) {
       },
     },
   });
+  console.log(place);
 }
-
-// "use server";
-
-// export async function uploadSpot(formData: FormData) {
-//   const data = {
-//     photo: formData.get("photo"),
-//     title: formData.get("title"),
-//     content: formData.get("content"),
-//     address: formData.get("address"),
-//     open: formData.get("open"),
-//     close: formData.get("close"),
-//     tel: formData.get("tel"),
-//     sns: formData.get("sns"),
-//     username: formData.get("username"),
-//   };
-//   console.log(data);
-// }

@@ -18,6 +18,7 @@ model User {
 model Place {
   id        Int     @id @default(autoincrement())
   title     String
+  category  String
   content   String
   address   String
   photo     String
