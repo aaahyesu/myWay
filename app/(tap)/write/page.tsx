@@ -217,20 +217,23 @@ export default function Write() {
             id="latitude-array"
             value={JSON.stringify(latitudeArray)}
             name="latitude"
+            required
           />
           <input
             type="hidden"
             id="longitude-array"
             value={JSON.stringify(longitudeArray)}
             name="longitude"
+            required
           />
           <input
             type="hidden"
             id="address-array"
             value={JSON.stringify(addressArray)}
             name="address"
+            required
           />
-          <input type="hidden" name="key" value={newKey} />
+          <input type="hidden" name="key" value={newKey} required/>
         </div>
       </div>
     </form>

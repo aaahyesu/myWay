@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-// Google Maps API 키
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
 
 interface CloudinaryResult {
@@ -24,7 +23,7 @@ type Coordinates = {
 export default function Page() {
   const [publicIds, setPublicIds] = useState<string[]>([]);
   const [coordinates, setCoordinates] = useState<Coordinates[]>([]);
-  const [placeNames, setPlaceNames] = useState<string[]>([]); // 장소명 배열 상태
+  const [placeNames, setPlaceNames] = useState<string[]>([]);
   const mapRef = useRef<google.maps.Map | null>(null);
   const { status, data: session } = useSession();
 
@@ -74,6 +73,19 @@ export default function Page() {
   }, [key]);
 
   useEffect(() => {
+    if (coordinates.length > 0) {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=geometry,drawing,places`;
+      script.onload = () => initializeMap();
+      document.body.appendChild(script);
+
+      return () => {
+        document.body.removeChild(script);
+      };
+    }
+  }, [coordinates]);
+
+  useEffect(() => {
     if (mapRef.current && coordinates.length > 0) {
       const bounds = new google.maps.LatLngBounds();
       coordinates.forEach((coord) => {
@@ -83,25 +95,8 @@ export default function Page() {
     }
   }, [coordinates]);
 
-  const handlePlaceNameChange = (index: number, value: string) => {
-    setPlaceNames((prevNames) => {
-      const newNames = [...prevNames];
-      newNames[index] = value;
-      return newNames;
-    });
-
-    // 장소명이 입력될 때마다 coordinates 상태 업데이트
-    setCoordinates((prevCoordinates) => {
-      const newCoordinates = [...prevCoordinates];
-      if (newCoordinates[index]) {
-        newCoordinates[index].address = value;
-      }
-      return newCoordinates;
-    });
-  };
-
   if (status === "loading") {
-    return null; // 로딩 중에는 아무것도 표시하지 않음
+    return null;
   }
 
   if (!session?.user?.name) {
@@ -121,24 +116,11 @@ export default function Page() {
     }
   };
 
-  useEffect(() => {
-    if (coordinates.length > 0) {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=geometry,drawing,places`;
-      script.onload = () => initializeMap();
-      document.body.appendChild(script);
-
-      return () => {
-        document.body.removeChild(script);
-      };
-    }
-  }, [coordinates]);
-
   const initializeMap = () => {
     if (coordinates.length > 0) {
       const map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
-        center: { lat: 37.5665, lng: 126.978 }, // 초기 중심 위치
-        zoom: 13, // 초기 줌 레벨
+        center: { lat: 37.5665, lng: 126.978 },
+        zoom: 13,
       });
 
       mapRef.current = map;
@@ -201,24 +183,22 @@ export default function Page() {
             <option value="여행">여행</option>
           </select>
 
-          {coordinates.map((_, index) => (
-            <div key={`${index}`}>
-              {coordinates[index] && (
-                <div>
-                  <input
-                    className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
-                    type="text"
-                    id={`name-${index}`}
-                    name={`name-${index}`}
-                    placeholder={`${index + 1} 장소명 `}
-                    value={placeNames[index] || ""}
-                    onChange={(e) =>
-                      handlePlaceNameChange(index, e.target.value)
-                    }
-                    required
-                  />
-                </div>
-              )}
+          {coordinates.map((coord, index) => (
+            <div key={index}>
+              <input
+                className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
+                type="text"
+                id={`name-${index}`}
+                name={`name-${index}`}
+                placeholder={`${index + 1} 장소명 `}
+                value={placeNames[index] || ""}
+                onChange={(e) => {
+                  const newPlaceNames = [...placeNames];
+                  newPlaceNames[index] = e.target.value;
+                  setPlaceNames(newPlaceNames);
+                }}
+                required
+              />
             </div>
           ))}
           <div
@@ -227,7 +207,7 @@ export default function Page() {
             className="bg-gray-200"
           ></div>
           <textarea
-            className="w-full p-4 text-base placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-gray-400  rounded-xl"
+            className="w-full p-4 text-base placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-gray-400 rounded-xl"
             rows={9}
             id="content"
             name="content"
@@ -273,14 +253,14 @@ export default function Page() {
                     src={publicId}
                     width={100}
                     height={100}
-                    alt="Uploaded Image Not Found"
+                    alt="Uploaded Image"
                   />
                 </div>
               ))}
             </div>
           </div>
           {publicIds.length > 0 && (
-            <input type="hidden" name="photo" id="photo" value={publicIds} />
+            <input type="hidden" name="photo" id="photo" required value={publicIds} />
           )}
         </div>
         <input
@@ -288,12 +268,14 @@ export default function Page() {
           id="username"
           value={session.user.name}
           type="hidden"
+          required
         />
         <input
           name="key"
           id="key"
           value={key}
           type="hidden"
+          required
         ></input>
         <button
           className="w-full mt-4 py-2 bg-black text-base font-semibold text-white border rounded-lg"

@@ -27,12 +27,11 @@ export default function HotUpload() {
 
   const handleUpload = (result: any) => {
     if (result.event === "success") {
-      if (publicIds.length < 5) {
-        // Corrected limit to 5 as per alert message
+      if (publicIds.length <= 1) {
         const info = result.info as CloudinaryResult;
         setPublicIds((prevPublicIds) => [...prevPublicIds, info.public_id]);
       } else {
-        alert("이미지 업로드는 5개까지 가능합니다.");
+        alert("이미지 업로드는 1개까지 가능합니다.");
       }
     }
   };
@@ -75,7 +74,7 @@ export default function HotUpload() {
                     />
                   </svg>
                   <span className="text-xs text-gray-400">
-                    {publicIds.length}/5
+                    {publicIds.length}/1
                   </span>
                 </div>
               </button>
@@ -131,13 +130,14 @@ export default function HotUpload() {
         </div>
 
         {publicIds.length > 0 && (
-          <input type="hidden" name="photo" id="photo" value={publicIds} />
+          <input type="hidden" name="photo" id="photo" required value={publicIds} />
         )}
         <input
           name="username"
           id="username"
           value={session.user.name}
           type="hidden"
+          required
         />
         <textarea
           className="w-full p-3 mt-6 text-base placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-gray-400 rounded-xl"
