@@ -118,10 +118,13 @@ export default function Page() {
 
   const initializeMap = () => {
     if (coordinates.length > 0) {
-      const map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
-        center: { lat: 37.5665, lng: 126.978 },
-        zoom: 13,
-      });
+      const map = new google.maps.Map(
+        document.getElementById("map") as HTMLElement,
+        {
+          center: { lat: 37.5665, lng: 126.978 },
+          zoom: 13,
+        }
+      );
 
       mapRef.current = map;
 
@@ -141,7 +144,10 @@ export default function Page() {
 
       if (coordinates.length > 1) {
         new google.maps.Polyline({
-          path: coordinates.map((coord) => ({ lat: coord.latitude, lng: coord.longitude })),
+          path: coordinates.map((coord) => ({
+            lat: coord.latitude,
+            lng: coord.longitude,
+          })),
           geodesic: true,
           strokeColor: "#FF0000",
           strokeOpacity: 1.0,
@@ -260,7 +266,13 @@ export default function Page() {
             </div>
           </div>
           {publicIds.length > 0 && (
-            <input type="hidden" name="photo" id="photo" required value={publicIds} />
+            <input
+              type="hidden"
+              name="photo"
+              id="photo"
+              required
+              value={publicIds}
+            />
           )}
         </div>
         <input
@@ -270,13 +282,7 @@ export default function Page() {
           type="hidden"
           required
         />
-        <input
-          name="key"
-          id="key"
-          value={key}
-          type="hidden"
-          required
-        ></input>
+        <input name="key" id="key" value={key} type="hidden" required></input>
         <button
           className="w-full mt-4 py-2 bg-black text-base font-semibold text-white border rounded-lg"
           onClick={() => router.push(`/main`)}

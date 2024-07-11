@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { CldImage } from "next-cloudinary";
 
 interface ListBannerProps {
   title: string;
@@ -18,9 +18,9 @@ export default function ListPlace({
     <div className="text-center border-2 border-gray-300 rounded-lg p-4 bg-slate-50">
       <div className="flex justify-center items-center h-40 mt-2">
         <div className=" w-60">
-          <Image
+          <CldImage
             src={photo}
-            alt="/img"
+            alt="배너 이미지"
             width={100}
             height={70}
             layout="fixed"

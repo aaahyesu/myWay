@@ -1,7 +1,8 @@
 "use client";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Map from "@/components/map";
 import { getMorePlaces, getMoreBanners } from "./actions";
 import { signIn, signOut, useSession } from "next-auth/react";
 
@@ -20,8 +21,6 @@ import { Bars3CenterLeftIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import ListPlace from "@/components/list-place";
 import ListBanner from "@/components/list-banner";
 
-import { useState, useEffect } from "react";
-
 type Place = {
   id: number;
   title: string;
@@ -35,39 +34,18 @@ type Banner = {
   photo: string;
 };
 
-async function getPlaces() {
-  const places = await prisma.place.findMany({
-    select: {
-      id: true,
-      title: true,
-      photo: true,
-      address: true,
-    },
-  });
-
-  return places;
-}
-async function getBanners() {
-  const banners = await prisma.banner.findMany({
-    select: {
-      id: true,
-      title: true,
-      photo: true,
-      content: true,
-    },
-  });
-}
-
 export default function Main() {
   const [places, setPlaces] = useState<Place[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [page, setPage] = useState(1);
+  const [region, setRegion] = useState<string>("");
+
   const { data: session } = useSession();
 
   useEffect(() => {
     async function fetchPlaces() {
       try {
-        const fetchedPlaces = await getMorePlaces(page, 1); // userId를 적절히 대체하세요
+        const fetchedPlaces = await getMorePlaces(page, 1);
         console.log(fetchedPlaces);
         setPlaces(fetchedPlaces);
       } catch (error) {
@@ -76,7 +54,7 @@ export default function Main() {
     }
     async function fetchBanners() {
       try {
-        const fetchedBanners = await getMoreBanners(page, 1); // userId를 적절히 대체하세요
+        const fetchedBanners = await getMoreBanners();
         console.log(fetchedBanners);
         setBanners(fetchedBanners);
       } catch (error) {
@@ -96,7 +74,6 @@ export default function Main() {
         paddingBottom: "2rem",
       }}
     >
-      {" "}
       <div className="w-full h-11 border-2 border-grey-400 rounded-lg mt-4 bg-gray-100 flex items-center justify-between px-4">
         <Bars3CenterLeftIcon className="w-7 h-7 text-gray-700" />
         <input
@@ -106,6 +83,7 @@ export default function Main() {
         />
         <UserCircleIcon className="w-7 h-7 text-gray-700" />
       </div>
+
       <div className="w-full mt-4 flex flex-col items-center justify-center">
         <Swiper
           effect="fade"
@@ -126,11 +104,14 @@ export default function Main() {
               className="swiper-slide"
               style={{ marginRight: "12px" }}
             >
-              <ListBanner key={banner.id} {...banner} />
+              <Link href={`/community/${banner.id}`}>
+                <ListBanner key={banner.id} {...banner} />
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
+
       <div className="flex justify-center mt-5 mr-2">
         <Link
           href="main/restaurant"
@@ -174,16 +155,7 @@ export default function Main() {
           를 위한 추천 코스
         </div>
       </div>
-      <div className="w-full h-80 border-2 border-grey-400 rounded-lg mt-4 bg-gray-100 flex items-center justify-between px-4">
-        <iframe
-          width="100%"
-          height="300"
-          frameBorder="0"
-          style={{ border: 0, marginTop: "5px" }}
-          src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY}&q=LOCATION`}
-          allowFullScreen
-        ></iframe>
-      </div>
+      <Map />
       <div className="flex mt-4 items-start w-full ">
         <img
           src="/recommend.png"
@@ -191,7 +163,7 @@ export default function Main() {
           className="w-8 h-8 mr-2"
         ></img>
         <div className="text-xl font-extrabold text-gray-800 ml-2 mt-1">
-          궁동 근처 핫플레이스
+          {region} 궁동 근처 핫플레이스
         </div>
         <Link href="../hotupload">
           <button className="flex items-center ml-14 mt-1 bg-black px-3 py-2 text-sm text-white shadow-xl rounded-full hover:bg-white hover:text-black">
@@ -199,13 +171,13 @@ export default function Main() {
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              stroke-width="1.5"
+              strokeWidth="1.5"
               stroke="currentColor"
               className="size-5"
             >
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
               />
             </svg>
@@ -218,7 +190,7 @@ export default function Main() {
           <ListPlace key={place.id} {...place} />
         ))}
       </div>
-      <p className="mb-24"></p>
+      <div className="mb-24"></div>
     </div>
   );
 }

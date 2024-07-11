@@ -13,8 +13,8 @@ export async function getMorePlaces(page: number, userId: number) {
 
   return places;
 }
-export async function getMoreBanners(page: number, userId: number) {
-  const banners = await prisma.banner.findMany({
+export async function getMoreBanners() {
+  const banners = await prisma.post.findMany({
     select: {
       id: true,
       title: true,
@@ -24,4 +24,70 @@ export async function getMoreBanners(page: number, userId: number) {
   });
 
   return banners;
+}
+export async function getMoreCafe() {
+  const cafes = await prisma.place.findMany({
+    where: {
+      category: "카페",
+    },
+    select: {
+      id: true,
+      title: true,
+      photo: true,
+      content: true,
+      address: true,
+    },
+  });
+
+  return cafes;
+}
+
+export async function getMoreRestaurant() {
+  const restaurants = await prisma.place.findMany({
+    where: {
+      category: "맛집",
+    },
+    select: {
+      id: true,
+      title: true,
+      photo: true,
+      content: true,
+      address: true,
+    },
+  });
+
+  return restaurants;
+}
+
+export async function getMoreGuid() {
+  const guids = await prisma.place.findMany({
+    where: {
+      category: "관광지",
+    },
+    select: {
+      id: true,
+      title: true,
+      photo: true,
+      content: true,
+      address: true,
+    },
+  });
+
+  return guids;
+}
+export async function getMoreRoad() {
+  const roads = await prisma.place.findMany({
+    where: {
+      category: "관광지",
+    },
+    select: {
+      id: true,
+      title: true,
+      photo: true,
+      content: true,
+      address: true,
+    },
+  });
+
+  return roads;
 }
