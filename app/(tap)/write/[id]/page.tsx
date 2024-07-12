@@ -176,6 +176,7 @@ export default function Page() {
             className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
             id="theme"
             name="theme"
+            aria-label="hi"
             required
           >
             <option value="" disabled selected>
