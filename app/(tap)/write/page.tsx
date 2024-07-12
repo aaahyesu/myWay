@@ -103,6 +103,28 @@ export default function Write() {
     }));
   };
 
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  const handleFormValidation = () => {
+    if (
+      latitudeArray.length === 0 ||
+      longitudeArray.length === 0 ||
+      addressArray.length === 0
+    ) {
+      setIsFormValid(false);
+      alert("모든 필수 필드를 입력하세요.");
+    } else {
+      setIsFormValid(true);
+    }
+  };
+
+  const handleRouteWriteClick = () => {
+    handleFormValidation();
+    if (isFormValid) {
+      router.push(`/write/${newKey}`);
+    }
+  };
+
   const latitudeArray = markers.map((marker) => marker.lat);
   const longitudeArray = markers.map((marker) => marker.lng);
   const addressArray = markers.map((marker) => marker.address);
@@ -182,7 +204,7 @@ export default function Write() {
             </button>
             <button
               className="flex items-center bg-black text-white py-2 px-4 rounded-full"
-              onClick={() => router.push(`/write/${newKey}`)}
+              onClick={handleRouteWriteClick}
             >
               <span className="mr-2">루트작성</span>
               <svg
@@ -233,11 +255,11 @@ export default function Write() {
             name="address"
             required
           />
-          <input type="hidden" name="key" value={newKey} required/>
+          <input type="hidden" name="key" value={newKey} required />
         </div>
       </div>
     </form>
   ) : (
-    <div>Loading...</div>
+    <div>Loading…</div>
   );
-};
+}

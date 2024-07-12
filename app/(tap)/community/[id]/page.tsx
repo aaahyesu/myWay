@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Slider from "react-slick";
@@ -15,15 +15,13 @@ type Post = {
   content: string;
   photo: string;
   authorname: string;
-  // coordinate: Coordinate[];
+  coordinate: {
+    address: string;
+    latitude: string;
+    longitude: string;
+    name: string | null;
+  }[];
 };
-
-// type Coordinate = {
-//   address: string;
-//   latitude: number;
-//   longitude: number;
-//   name: string;
-// };
 
 interface GoogleWindow extends Window {
   google: {
@@ -36,7 +34,7 @@ interface GoogleWindow extends Window {
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
 
 export default function Detail() {
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<Post | undefined>(undefined);
   const path = usePathname();
   const id = path.substring("/community/".length);
 
@@ -47,14 +45,15 @@ export default function Detail() {
         const filteredPost = fetchedPosts.find(
           (posting) => posting.id === Number(id)
         );
-        setPost(filteredPost || null);
+        setPost(filteredPost);
+        console.log(filteredPost?.coordinate[0].address)
+        console.log(filteredPost?.coordinate[0].latitude)   
       } catch (error) {
         console.error("Error fetching post: ", error);
       }
     }
-
     fetchPost();
-  }, [id]);
+  }, []);
 
   const settings = {
     dots: true,
@@ -86,31 +85,38 @@ export default function Detail() {
 
   return (
     <div className="py-10">
+      <div className="flex flex-grow justify-end">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          className="w-6 h-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+          />
+        </svg>
+      </div>
+      <div id="map" className="w-96 h-80 mb-6"></div>
       <div className="mt-4 flex space-x-2 mb-6">
         <h1 className="text-xl font-semibold">{post?.title}</h1>
         <span className="inline-flex items-center rounded-lg bg-blue-400 px-2 py-1 text-sm font-semibold text-white">
           {post?.theme}
         </span>
-        <div className="flex flex-grow justify-end">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-            />
-          </svg>
-        </div>
       </div>
-      <div id="map" className="w-96 h-80 mb-6"></div>
-      <div className="space-y-4">
-        <h2 className="text-base text-gray-800">장소 이름들 출력하기 coordinate.name </h2>
+      <div className="space-y-3">
+        {post?.coordinate?.[0]?.name &&
+          JSON.parse(post.coordinate[0].name).map(
+            (name: string, index: number) => (
+              <h2 key={index} className="text-base text-gray-500">
+                📌 {index + 1} 번째 플레이스  {name}
+              </h2>
+            )
+          )}
       </div>
       <div className="flex space-x-3 mt-10 mb-4 items-center">
         <img

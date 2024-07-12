@@ -70,7 +70,7 @@ export default function Page() {
       }
     }
     fetchCoordinates();
-  }, [key]);
+  }, []);
 
   useEffect(() => {
     if (coordinates.length > 0) {
@@ -106,14 +106,39 @@ export default function Page() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (!validateForm()) {
+      alert("모든 필수 필드를 입력하세요.");
+      return;
+    }
+
     try {
       const formData = new FormData(event.currentTarget);
       formData.append("names", JSON.stringify(placeNames));
       const response = await upload(formData);
       console.log("Upload successful", response);
+      router.push(`/main`);
     } catch (error) {
       console.error("Error uploading data:", error);
     }
+  };
+
+  const validateForm = () => {
+    const title = document.getElementById("title") as HTMLInputElement;
+    const theme = document.getElementById("theme") as HTMLSelectElement;
+    const content = document.getElementById("content") as HTMLTextAreaElement;
+
+    if (!title.value || !theme.value || !content.value || publicIds.length === 0) {
+      return false;
+    }
+
+    for (let i = 0; i < coordinates.length; i++) {
+      const placeName = document.getElementById(`name-${i}`) as HTMLInputElement;
+      if (!placeName.value) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const initializeMap = () => {
@@ -285,7 +310,7 @@ export default function Page() {
         <input name="key" id="key" value={key} type="hidden" required></input>
         <button
           className="w-full mt-4 py-2 bg-black text-base font-semibold text-white border rounded-lg"
-          onClick={() => router.push(`/main`)}
+          type="submit"
         >
           등록
         </button>
