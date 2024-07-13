@@ -92,3 +92,16 @@ export async function getMoreRoad() {
 
   return roads;
 }
+
+export async function getMoreRoute() {
+  const keys = await prisma.coordinate.findMany({
+    select: {
+      id: true,
+      address: true,
+      latitude: true,
+      longitude: true,
+    },
+  });
+
+  return keys;
+}

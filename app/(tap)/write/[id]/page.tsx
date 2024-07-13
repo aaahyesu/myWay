@@ -128,12 +128,19 @@ export default function Page() {
     const theme = document.getElementById("theme") as HTMLSelectElement;
     const content = document.getElementById("content") as HTMLTextAreaElement;
 
-    if (!title.value || !theme.value || !content.value || publicIds.length === 0) {
+    if (
+      !title.value ||
+      !theme.value ||
+      !content.value ||
+      publicIds.length === 0
+    ) {
       return false;
     }
 
     for (let i = 0; i < coordinates.length; i++) {
-      const placeName = document.getElementById(`name-${i}`) as HTMLInputElement;
+      const placeName = document.getElementById(
+        `name-${i}`
+      ) as HTMLInputElement;
       if (!placeName.value) {
         return false;
       }

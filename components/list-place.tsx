@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { CldImage } from "next-cloudinary";
 
 interface ListPlaceProps {
   title: string;
@@ -18,7 +18,7 @@ export default function ListPlace({
     <div className="flex flex-col items-center">
       <Link href={`/main/${id}`} className="">
         <div className="w-42 h-32 rounded-xl overflow-hidden">
-          <Image src={photo} alt={title} width={170} height={130} />
+          <CldImage src={photo} alt={title} width={170} height={130} />
         </div>
       </Link>
       <p className="text-left mt-2 font-semibold">{title}</p>

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 const containerStyle = {
   width: "100%",
   height: "330px",
-  marginTop: 5,
+  marginTop: 10,
 };
 
 type Location = {
