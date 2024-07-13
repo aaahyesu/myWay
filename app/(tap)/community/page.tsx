@@ -17,13 +17,14 @@ type Post = {
 
 export default function Community() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlides, setCurrentSlides] = useState<number[]>([]);
 
   useEffect(() => {
     async function fetchPosts() {
       try {
         const fetchedPosts = await getPosts();
         setPosts(fetchedPosts);
+        setCurrentSlides(new Array(fetchedPosts.length).fill(0)); // Initialize slides for each post
       } catch (error) {
         console.error("Error fetching places: ", error);
       }
@@ -32,17 +33,19 @@ export default function Community() {
   }, []);
 
   const nextSlide = (postIndex: number) => {
-    setCurrentSlide(
-      (prevSlide) => (prevSlide + 1) % posts[postIndex].photo.split(",").length
-    );
+    setCurrentSlides((prevSlides) => {
+      const newSlides = [...prevSlides];
+      newSlides[postIndex] = (newSlides[postIndex] + 1) % posts[postIndex].photo.split(",").length;
+      return newSlides;
+    });
   };
 
   const prevSlide = (postIndex: number) => {
-    setCurrentSlide(
-      (prevSlide) =>
-        (prevSlide - 1 + posts[postIndex].photo.split(",").length) %
-        posts[postIndex].photo.split(",").length
-    );
+    setCurrentSlides((prevSlides) => {
+      const newSlides = [...prevSlides];
+      newSlides[postIndex] = (newSlides[postIndex] - 1 + posts[postIndex].photo.split(",").length) % posts[postIndex].photo.split(",").length;
+      return newSlides;
+    });
   };
 
   return (
@@ -69,7 +72,7 @@ export default function Community() {
           <div className="w-[360px] h-[360px] m-auto relative group flex items-center justify-center">
             <div className="w-full h-full flex items-center justify-center">
               <CldImage
-                src={post.photo.split(",")[currentSlide]}
+                src={post.photo.split(",")[currentSlides[i]]}
                 width={350}
                 height={350}
                 alt="Uploaded Image"

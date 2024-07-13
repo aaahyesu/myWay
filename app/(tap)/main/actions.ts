@@ -8,6 +8,7 @@ export async function getMorePlaces(page: number, userId: number) {
       title: true,
       photo: true,
       address: true,
+      username: true,
     },
   });
 
