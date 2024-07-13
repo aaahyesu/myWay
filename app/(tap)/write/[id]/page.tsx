@@ -7,6 +7,7 @@ import { getMapKey } from "../action";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Bar from "@/components/bar";
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
 
@@ -185,7 +186,8 @@ export default function Page() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="py-10 mb-24">
+      <Bar canGoBack title="루트 작성하기" />
+      <div className="py-16 mb-24">
         <input
           className="w-full px-2 py-2 placeholder-gray-400 text-xl font-semibold border-b-[1.6px] border-gray-300 focus:border-gray-400 focus:outline-none"
           type="text"

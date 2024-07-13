@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getPosts } from "./action";
 import { CldImage } from "next-cloudinary";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
+import Bar from "@/components/bar";
 
 type Post = {
   id: number;
@@ -45,7 +46,8 @@ export default function Community() {
   };
 
   return (
-    <div className="">
+    <div className="py-10">
+      <Bar title="커뮤니티" />
       {posts.map((post, i) => (
         <div
           key={i}

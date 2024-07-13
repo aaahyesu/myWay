@@ -6,7 +6,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { getPosts } from "../action";
 import { usePathname } from "next/navigation";
-import { CldImage } from "next-cloudinary"; // Import CldImage component
+import { CldImage } from "next-cloudinary";
+import Bar from "@/components/bar";
 
 type Post = {
   id: number;
@@ -24,11 +25,7 @@ type Post = {
 };
 
 interface GoogleWindow extends Window {
-  google: {
-    maps: {
-      Map: any;
-    };
-  };
+  google: typeof google;
 }
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
@@ -46,8 +43,6 @@ export default function Detail() {
           (posting) => posting.id === Number(id)
         );
         setPost(filteredPost);
-        console.log(filteredPost?.coordinate[0].address)
-        console.log(filteredPost?.coordinate[0].latitude)   
       } catch (error) {
         console.error("Error fetching post: ", error);
       }
@@ -63,44 +58,99 @@ export default function Detail() {
   };
 
   useEffect(() => {
-    // Load Google Maps script dynamically
     const loadGoogleMapsScript = () => {
       const googleMapsScript = document.createElement("script");
-      googleMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}`;
+      googleMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
       googleMapsScript.async = true;
       window.document.body.appendChild(googleMapsScript);
       googleMapsScript.addEventListener("load", initMap);
     };
 
     const initMap = () => {
-      const googleMap = (window as GoogleWindow).google.maps.Map;
-      const map = new googleMap(document.getElementById("map"), {
+      const { google } = window as GoogleWindow;
+      const mapElement = document.getElementById("map");
+
+      if (!mapElement) {
+        console.error("Map element not found");
+        return;
+      }
+
+      const map = new google.maps.Map(mapElement, {
         center: { lat: 37.5665, lng: 126.978 },
-        zoom: 16,
+        zoom: 10,
       });
+
+      const geocoder = new google.maps.Geocoder();
+      const addresses = post?.coordinate?.[0]?.address
+        ? JSON.parse(post.coordinate[0].address)
+        : [];
+
+      const addMarkersAndPolyline = async () => {
+        const coordinatesPromises = addresses.map(
+          (address: string) =>
+            new Promise<{ lat: number; lng: number }>((resolve, reject) => {
+              geocoder.geocode({ address }, (results, status) => {
+                if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+                  const location = results[0].geometry.location;
+                  resolve({ lat: location.lat(), lng: location.lng() });
+                } else {
+                  reject(status);
+                }
+              });
+            })
+        );
+
+        try {
+          const coordinates = await Promise.all(coordinatesPromises);
+          const path = coordinates.map((coord) => ({
+            lat: coord.lat,
+            lng: coord.lng,
+          }));
+
+          const bounds = new google.maps.LatLngBounds();
+
+          coordinates.forEach((coord, index) => {
+            const marker = new google.maps.Marker({
+              position: coord,
+              map,
+              label: {
+                text: (index + 1).toString(),
+                color: "white",
+              },
+            });
+            bounds.extend(coord);
+          });
+
+          new google.maps.Polyline({
+            path,
+            geodesic: true,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+            map,
+          });
+
+          if (path.length > 0) {
+            map.fitBounds(bounds);
+          }
+        } catch (error) {
+          console.error("Error adding markers and polyline: ", error);
+        }
+      };
+
+      if (addresses.length) {
+        addMarkersAndPolyline();
+      }
     };
 
-    loadGoogleMapsScript();
-  }, []);
+    if (post) {
+      loadGoogleMapsScript();
+    }
+  }, [post]);
 
   return (
-    <div className="py-10">
-      <div className="flex flex-grow justify-end">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-          />
-        </svg>
-      </div>
+    <div className="py-16">
+      <Bar canGoBack title={post?.title} bookmark/>
       <div id="map" className="w-96 h-80 mb-6"></div>
       <div className="mt-4 flex space-x-2 mb-6">
         <h1 className="text-xl font-semibold">{post?.title}</h1>
@@ -142,7 +192,7 @@ export default function Detail() {
             {post?.photo.split(",").map((photoUrl, index) => (
               <div key={index} className="w-200 h-200 flex-shrink-0">
                 <CldImage
-                  src={photoUrl.trim()} // Ensure to trim the URL to remove any whitespace
+                  src={photoUrl.trim()}
                   className="rounded-lg shadow-md"
                   alt={`Photo ${index + 1}`}
                   width={300}

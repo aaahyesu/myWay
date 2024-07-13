@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect } from "react";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import Bar from "@/components/bar";
 
 export default function Mypage() {
   const { status, data: session } = useSession();
@@ -26,16 +27,9 @@ export default function Mypage() {
   }, [status, router]);
 
   return (
-    <div className="bg-white w-full flex flex-col">
-      <div className="flex items-center justify-between px-4 py-2 border-b">
-        <button onClick={handleGoBack} title="뒤로가기">
-          <ChevronLeftIcon className="w-6 h-6 text-gray-700" />
-        </button>
-        <h1 className="text-lg font-medium">마이 페이지</h1>
-        <div></div>
-      </div>
-
-      <div className="flex justify-left mx-8 my-10" style={{ height: "100px" }}>
+    <div className="bg-white w-full flex flex-col py-16">
+      <Bar title="마이페이지" />
+      <div className="flex justify-left mx-8" style={{ height: "100px" }}>
         <img
           src="/banner2.jpeg"
           alt="Profile"

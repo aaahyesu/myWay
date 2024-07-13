@@ -10,6 +10,7 @@ import {
 import Image from "next/image";
 import { upload } from "./action";
 import { useRouter } from "next/navigation";
+import Bar from "@/components/bar";
 
 const containerStyle = {
   width: "100%",
@@ -131,7 +132,8 @@ export default function Write() {
 
   return isLoaded ? (
     <form action={upload} method="post">
-      <div className="py-10 mb-20">
+      <Bar title="루트 작성하기" />
+      <div className="py-16 mb-20">
         <h1 className="text-xl font-semibold mb-4">나만의 루트 만들기</h1>
         <div className="flex justify-between items-center">
           <div>
