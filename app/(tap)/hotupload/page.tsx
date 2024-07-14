@@ -109,10 +109,8 @@ export default function HotUpload() {
               </option>
               <option value="맛집">맛집</option>
               <option value="카페">카페</option>
-              <option value="관광">관광</option>
-              <option value="핫플">핫플</option>
-              <option value="힐링">힐링</option>
-              <option value="여행">여행</option>
+              <option value="관광지">관광지</option>
+              <option value="추천코스">추천코스</option>
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
               <svg
