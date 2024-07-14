@@ -40,6 +40,27 @@ export async function upload(formData: FormData) {
   const longitude = data.longitude.toString();
   const key = BigInt(data.key as string); // Convert key to BigInt
 
+  // 기존 좌표가 있는지 확인
+  const existingCoordinate = await prisma.coordinate.findUnique({
+    where: { key: key },
+  });
+
+  if (existingCoordinate) {
+    // 기존 좌표가 있으면 업데이트
+    const updatedCoordinate = await prisma.coordinate.update({
+      where: { key: key },
+      data: {
+        address: address,
+        latitude: latitude,
+        longitude: longitude,
+      },
+    });
+
+    console.log("Coordinate updated:", updatedCoordinate);
+    return updatedCoordinate; // 업데이트된 좌표 반환
+  }
+
+  // 기존 좌표가 없다면 새로 생성
   const coordinate = await prisma.coordinate.create({
     data: {
       address: address,
@@ -50,6 +71,5 @@ export async function upload(formData: FormData) {
   });
 
   console.log("Coordinate created:", coordinate);
-
-  return data;
+  return coordinate; // 생성된 좌표 반환
 }

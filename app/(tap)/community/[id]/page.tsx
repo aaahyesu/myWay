@@ -32,6 +32,7 @@ const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
 
 export default function Detail() {
   const [post, setPost] = useState<Post | undefined>(undefined);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const path = usePathname();
   const id = path.substring("/community/".length);
 
@@ -48,122 +49,125 @@ export default function Detail() {
       }
     }
     fetchPost();
-  }, []);
-
-  const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 2,
-  };
+  }, [id]);
 
   useEffect(() => {
-    const loadGoogleMapsScript = () => {
-      const googleMapsScript = document.createElement("script");
-      googleMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
-      googleMapsScript.async = true;
-      window.document.body.appendChild(googleMapsScript);
-      googleMapsScript.addEventListener("load", initMap);
-    };
-
-    const initMap = () => {
-      const { google } = window as GoogleWindow;
-      const mapElement = document.getElementById("map");
-
-      if (!mapElement) {
-        console.error("Map element not found");
-        return;
+    if (post && !mapLoaded) {
+      // Load Google Maps script if not loaded
+      if (!document.getElementById("google-maps-script")) {
+        const googleMapsScript = document.createElement("script");
+        googleMapsScript.id = "google-maps-script";
+        googleMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
+        googleMapsScript.async = true;
+        window.document.body.appendChild(googleMapsScript);
+        googleMapsScript.onload = () => {
+          setMapLoaded(true);
+          initMap();
+        };
+      } else {
+        initMap();
       }
-
-      const map = new google.maps.Map(mapElement, {
-        center: { lat: 37.5665, lng: 126.978 },
-        zoom: 10,
-      });
-
-      const geocoder = new google.maps.Geocoder();
-      const addresses = post?.coordinate?.[0]?.address
-        ? JSON.parse(post.coordinate[0].address)
-        : [];
-
-      const addMarkersAndPolyline = async () => {
-        const coordinatesPromises = addresses.map(
-          (address: string) =>
-            new Promise<{ lat: number; lng: number }>((resolve, reject) => {
-              geocoder.geocode({ address }, (results, status) => {
-                if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
-                  const location = results[0].geometry.location;
-                  resolve({ lat: location.lat(), lng: location.lng() });
-                } else {
-                  reject(status);
-                }
-              });
-            })
-        );
-
-        try {
-          const coordinates = await Promise.all(coordinatesPromises);
-          const path = coordinates.map((coord) => ({
-            lat: coord.lat,
-            lng: coord.lng,
-          }));
-
-          const bounds = new google.maps.LatLngBounds();
-
-          coordinates.forEach((coord, index) => {
-            const marker = new google.maps.Marker({
-              position: coord,
-              map,
-              label: {
-                text: (index + 1).toString(),
-                color: "white",
-              },
-            });
-            bounds.extend(coord);
-          });
-
-          new google.maps.Polyline({
-            path,
-            geodesic: true,
-            strokeColor: "#FF0000",
-            strokeOpacity: 1.0,
-            strokeWeight: 2,
-            map,
-          });
-
-          if (path.length > 0) {
-            map.fitBounds(bounds);
-          }
-        } catch (error) {
-          console.error("Error adding markers and polyline: ", error);
-        }
-      };
-
-      if (addresses.length) {
-        addMarkersAndPolyline();
-      }
-    };
-
-    if (post) {
-      loadGoogleMapsScript();
     }
-  }, [post]);
+  }, [post, mapLoaded]);
+
+  const initMap = () => {
+    const { google } = window as GoogleWindow;
+    const mapElement = document.getElementById("map");
+
+    if (!mapElement) {
+      console.error("Map element not found");
+      return;
+    }
+
+    const map = new google.maps.Map(mapElement, {
+      center: { lat: 37.5665, lng: 126.978 },
+      zoom: 10,
+    });
+
+    const geocoder = new google.maps.Geocoder();
+    const addresses = post?.coordinate?.[0]?.address
+      ? JSON.parse(post.coordinate[0].address)
+      : [];
+
+    const addMarkersAndPolyline = async () => {
+      const coordinatesPromises = addresses.map((address: string) =>
+        new Promise<{ lat: number; lng: number }>((resolve, reject) => {
+          geocoder.geocode({ address }, (results, status) => {
+            if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+              const location = results[0].geometry.location;
+              resolve({ lat: location.lat(), lng: location.lng() });
+            } else {
+              reject(status);
+            }
+          });
+        })
+      );
+
+      try {
+        const coordinates = await Promise.all(coordinatesPromises);
+        const path = coordinates.map((coord) => ({
+          lat: coord.lat,
+          lng: coord.lng,
+        }));
+
+        const bounds = new google.maps.LatLngBounds();
+        coordinates.forEach((coord, index) => {
+          new google.maps.Marker({
+            position: coord,
+            map,
+            label: {
+              text: (index + 1).toString(),
+              color: "white",
+            },
+          });
+          bounds.extend(coord);
+        });
+
+        new google.maps.Polyline({
+          path,
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+          map,
+        });
+
+        if (path.length > 0) {
+          map.fitBounds(bounds);
+        }
+      } catch (error) {
+        console.error("Error adding markers and polyline: ", error);
+      }
+    };
+
+    if (addresses.length) {
+      addMarkersAndPolyline();
+    }
+  };
+
+  if (!post) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="py-16">
-      <Bar canGoBack title={post?.title} bookmark/>
+      <Bar canGoBack title={post.title} bookmark />
       <div id="map" className="w-96 h-80 mb-6"></div>
       <div className="mt-4 flex space-x-2 mb-6">
-        <h1 className="text-xl font-semibold">{post?.title}</h1>
+        <h1 className="text-xl font-semibold">{post.title}</h1>
         <span className="inline-flex items-center rounded-lg bg-blue-400 px-2 py-1 text-sm font-semibold text-white">
-          {post?.theme}
+          {post.theme}
         </span>
       </div>
       <div className="space-y-3">
-        {post?.coordinate?.[0]?.name &&
+        {post.coordinate[0]?.name &&
           JSON.parse(post.coordinate[0].name).map(
             (name: string, index: number) => (
               <h2 key={index} className="text-base text-gray-500">
-                📌 {index + 1} 번째 플레이스  {name}
+                <span className="text-gray-500">
+                  📍 {index + 1} 번째 플레이스 :
+                </span>{" "}
+                <span className="text-black">{name}</span>
               </h2>
             )
           )}
@@ -175,8 +179,7 @@ export default function Detail() {
           alt=""
         />
         <div>
-          <h1 className="text-base">{post?.authorname}</h1>
-          <h2 className="font-light text-[10px]">DaeJeon, Korea</h2>
+          <h1 className="text-base">{post.authorname}</h1>
         </div>
       </div>
       <div className="relative pt-10">
@@ -188,15 +191,15 @@ export default function Detail() {
           className="absolute inset-0 z-10"
         />
         <div className="slider-container relative z-20">
-          <Slider {...settings}>
-            {post?.photo.split(",").map((photoUrl, index) => (
+          <Slider>
+            {post.photo.split(",").map((photoUrl, index) => (
               <div key={index} className="w-200 h-200 flex-shrink-0">
                 <CldImage
                   src={photoUrl.trim()}
                   className="rounded-lg shadow-md"
                   alt={`Photo ${index + 1}`}
-                  width={300}
-                  height={300}
+                  width={250}
+                  height={250}
                 />
               </div>
             ))}
@@ -204,8 +207,8 @@ export default function Detail() {
           </Slider>
         </div>
       </div>
-      <div className="mt-20 space-y-6">
-        <h2 className="text-base text-gray-800">{post?.content}</h2>
+      <div className="mt-16 space-y-6">
+        <h2 className="text-base text-gray-800">{post.content}</h2>
       </div>
       <h1 className="mt-14 font-semibold text-xl text-gray-800">
         이런사람에게 추천해요👍

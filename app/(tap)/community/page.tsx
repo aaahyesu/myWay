@@ -35,7 +35,8 @@ export default function Community() {
   const nextSlide = (postIndex: number) => {
     setCurrentSlides((prevSlides) => {
       const newSlides = [...prevSlides];
-      newSlides[postIndex] = (newSlides[postIndex] + 1) % posts[postIndex].photo.split(",").length;
+      newSlides[postIndex] =
+        (newSlides[postIndex] + 1) % posts[postIndex].photo.split(",").length;
       return newSlides;
     });
   };
@@ -43,7 +44,9 @@ export default function Community() {
   const prevSlide = (postIndex: number) => {
     setCurrentSlides((prevSlides) => {
       const newSlides = [...prevSlides];
-      newSlides[postIndex] = (newSlides[postIndex] - 1 + posts[postIndex].photo.split(",").length) % posts[postIndex].photo.split(",").length;
+      newSlides[postIndex] =
+        (newSlides[postIndex] - 1 + posts[postIndex].photo.split(",").length) %
+        posts[postIndex].photo.split(",").length;
       return newSlides;
     });
   };
@@ -64,10 +67,11 @@ export default function Community() {
             />
             <div>
               <h1 className="text-base">{post.authorname}</h1>
-              <h2 style={{ fontSize: "10px" }} className="font-light">
-                DaeJeon, Korea
-              </h2>
             </div>
+            <div className="flex flex-grow justify-end"></div>
+            <button className="inline-flex items-center rounded-2xl bg-gray-50 px-4 py-2 text-xs text-gray-600 ring-1 ring-inset ring-gray-500/10">
+              follow
+            </button>
           </div>
           <div className="w-[360px] h-[360px] m-auto relative group flex items-center justify-center">
             <div className="w-full h-full flex items-center justify-center">
@@ -76,7 +80,8 @@ export default function Community() {
                 width={350}
                 height={350}
                 alt="Uploaded Image"
-                className="object-cover"
+                className="object-cover w-auto h-auto"
+                priority
               />
             </div>
             {post.photo.split(",").length > 1 && (

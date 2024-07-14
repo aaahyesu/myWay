@@ -40,7 +40,7 @@ export default function Write() {
 
   const router = useRouter();
 
-  const newKey = Math.floor(Math.random() * 10000) + Date.now();
+  const newKey = (Date.now()) * Number(10000) + Number(Math.floor(Math.random() * 10000));
   const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -131,7 +131,7 @@ export default function Write() {
   const addressArray = markers.map((marker) => marker.address);
 
   return isLoaded ? (
-    <form action={upload} method="post">
+    <form action={upload}>
       <Bar title="루트 작성하기" />
       <div className="py-16 mb-20">
         <h1 className="text-xl font-semibold mb-4">나만의 루트 만들기</h1>

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link"
+import Link from "next/link";
 import { getPosts } from "@/app/(tap)/community/action";
 import { CldImage } from "next-cloudinary";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
@@ -35,7 +35,8 @@ export default function Community() {
   const nextSlide = (postIndex: number) => {
     setCurrentSlides((prevSlides) => {
       const newSlides = [...prevSlides];
-      newSlides[postIndex] = (newSlides[postIndex] + 1) % posts[postIndex].photo.split(",").length;
+      newSlides[postIndex] =
+        (newSlides[postIndex] + 1) % posts[postIndex].photo.split(",").length;
       return newSlides;
     });
   };
@@ -43,7 +44,9 @@ export default function Community() {
   const prevSlide = (postIndex: number) => {
     setCurrentSlides((prevSlides) => {
       const newSlides = [...prevSlides];
-      newSlides[postIndex] = (newSlides[postIndex] - 1 + posts[postIndex].photo.split(",").length) % posts[postIndex].photo.split(",").length;
+      newSlides[postIndex] =
+        (newSlides[postIndex] - 1 + posts[postIndex].photo.split(",").length) %
+        posts[postIndex].photo.split(",").length;
       return newSlides;
     });
   };
@@ -56,18 +59,18 @@ export default function Community() {
           key={i}
           className="mt-8 rounded-lg border border-gray-200 shadow-md p-3"
         >
-          <div className="flex space-x-3 mb-2 items-center">
-            <img
-              className="inline-block h-9 w-9 rounded-full ring-2 ring-white"
-              src="./profile.png"
-              alt=""
-            />
-            <div>
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex space-x-3 items-center">
+              <img
+                className="inline-block h-9 w-9 rounded-full ring-2 ring-white"
+                src="../profile.png"
+                alt=""
+              />
               <h1 className="text-base">{post.authorname}</h1>
-              <h2 style={{ fontSize: "10px" }} className="font-light">
-                DaeJeon, Korea
-              </h2>
             </div>
+            <button className="inline-flex items-center rounded-2xl bg-gray-50 px-4 py-2 text-xs text-gray-600 ring-1 ring-inset ring-gray-500/10">
+              follow
+            </button>
           </div>
           <div className="w-[360px] h-[360px] m-auto relative group flex items-center justify-center">
             <div className="w-full h-full flex items-center justify-center">

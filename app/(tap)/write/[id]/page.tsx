@@ -27,9 +27,10 @@ export default function Page() {
   const [placeNames, setPlaceNames] = useState<string[]>([]);
   const mapRef = useRef<google.maps.Map | null>(null);
   const { status, data: session } = useSession();
-
   const path = usePathname();
   const key = path.substring("/write/".length);
+  const router = useRouter();
+  const [selectedTheme, setSelectedTheme] = useState("");
 
   const handleUpload = (result: any) => {
     if (result.event === "success") {
@@ -41,8 +42,6 @@ export default function Page() {
       }
     }
   };
-
-  const router = useRouter();
 
   useEffect(() => {
     async function fetchCoordinates() {
@@ -74,27 +73,61 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    if (coordinates.length > 0) {
+    if (coordinates.length > 0 && !window.google) {
       const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=geometry,drawing,places`;
-      script.onload = () => initializeMap();
+      script.onload = initializeMap;
       document.body.appendChild(script);
 
       return () => {
         document.body.removeChild(script);
       };
+    } else if (coordinates.length > 0) {
+      initializeMap(); // Directly initialize if already loaded
     }
   }, [coordinates]);
 
-  useEffect(() => {
-    if (mapRef.current && coordinates.length > 0) {
+  const initializeMap = () => {
+    if (coordinates.length > 0 && mapRef.current === null) {
+      const map = new google.maps.Map(
+        document.getElementById("map") as HTMLElement,
+        {
+          center: { lat: 37.5665, lng: 126.978 },
+          zoom: 13,
+        }
+      );
+
+      mapRef.current = map;
+
       const bounds = new google.maps.LatLngBounds();
       coordinates.forEach((coord) => {
         bounds.extend(new google.maps.LatLng(coord.latitude, coord.longitude));
       });
-      mapRef.current.fitBounds(bounds);
+      map.fitBounds(bounds);
+
+      coordinates.forEach((coord, index) => {
+        new google.maps.Marker({
+          position: { lat: coord.latitude, lng: coord.longitude },
+          map: map,
+          label: `${index + 1}`,
+        });
+      });
+
+      if (coordinates.length > 1) {
+        new google.maps.Polyline({
+          path: coordinates.map((coord) => ({
+            lat: coord.latitude,
+            lng: coord.longitude,
+          })),
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+          map: map,
+        });
+      }
     }
-  }, [coordinates]);
+  };
 
   if (status === "loading") {
     return null;
@@ -149,48 +182,6 @@ export default function Page() {
     return true;
   };
 
-  const initializeMap = () => {
-    if (coordinates.length > 0) {
-      const map = new google.maps.Map(
-        document.getElementById("map") as HTMLElement,
-        {
-          center: { lat: 37.5665, lng: 126.978 },
-          zoom: 13,
-        }
-      );
-
-      mapRef.current = map;
-
-      const bounds = new google.maps.LatLngBounds();
-      coordinates.forEach((coord) => {
-        bounds.extend(new google.maps.LatLng(coord.latitude, coord.longitude));
-      });
-      map.fitBounds(bounds);
-
-      coordinates.forEach((coord, index) => {
-        new google.maps.Marker({
-          position: { lat: coord.latitude, lng: coord.longitude },
-          map: map,
-          label: `${index + 1}`,
-        });
-      });
-
-      if (coordinates.length > 1) {
-        new google.maps.Polyline({
-          path: coordinates.map((coord) => ({
-            lat: coord.latitude,
-            lng: coord.longitude,
-          })),
-          geodesic: true,
-          strokeColor: "#FF0000",
-          strokeOpacity: 1.0,
-          strokeWeight: 2,
-          map: map,
-        });
-      }
-    }
-  };
-
   return (
     <form onSubmit={handleSubmit}>
       <Bar canGoBack title="루트 작성하기" />
@@ -210,10 +201,11 @@ export default function Page() {
             className="w-full px-2 py-1.5 text-base placeholder-gray-400 border-b border-gray-200 focus:border-gray-400 focus:outline-none"
             id="theme"
             name="theme"
-            aria-label="hi"
+            value={selectedTheme}
+            onChange={(e) => setSelectedTheme(e.target.value)}
             required
           >
-            <option value="" disabled selected>
+            <option value="" disabled>
               테마를 선택하세요
             </option>
             <option value="맛집">맛집</option>
@@ -317,7 +309,7 @@ export default function Page() {
           type="hidden"
           required
         />
-        <input name="key" id="key" value={key} type="hidden" required></input>
+        <input name="key" id="key" value={key} type="hidden" required />
         <button
           className="w-full mt-4 py-2 bg-black text-base font-semibold text-white border rounded-lg"
           type="submit"
