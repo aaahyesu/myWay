@@ -1,6 +1,9 @@
+"use client";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
-// import getSession from "@/lib/session";
+import { getMorePlaces } from "@/app/(tap)/main/actions";
+import React, { useState, useEffect } from "react";
+import Loading from "@/app/(tap)/main/[id]/loading";
 
 import {
   HeartIcon as OutlineHeartIcon,
@@ -10,43 +13,49 @@ import {
   ShareIcon,
 } from "@heroicons/react/24/outline";
 
-import Image from "next/image";
-import React from "react";
+import { CldImage } from "next-cloudinary";
 
-// 페이지 작성한 사람이 본인일 경우
-async function getIsOwner(userId: number) {
-  // const session = await getSession();
-  // if (session.id) {
-  //   return session.id === userId;
-  // }
-  return false;
-}
-async function getPlace(id: number) {
-  const place = await prisma.place.findUnique({
-    where: {
-      id,
-    },
-  });
-  console.log(place);
-  return place;
-}
+type Place = {
+  id: number;
+  title: string;
+  address: string;
+  photo: string;
+  content: string;
+  open: string;
+  close: string;
+  tel: string;
+  sns: string;
+};
 
-export default async function PlaceDetail({
-  params,
-}: {
-  params: { id: string };
-}) {
-  // 주소 창에 숫자 아닌 문자열 입력 막기
+export default function PlaceDetail({ params }: { params: { id: string } }) {
   const id = Number(params.id);
-  if (isNaN(id)) {
-    return notFound();
+
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function fetchPlaces() {
+      const fetchedPlaces = await getMorePlaces(1, 1);
+      const filteredPlace = fetchedPlaces.filter(
+        (place_id) => place_id.id === id
+      );
+      setPlaces(filteredPlace);
+      setLoading(false);
+    }
+
+    fetchPlaces();
+  }, [id]);
+
+  if (loading) {
+    return <Loading />; // Display the Loading component while loading
   }
-  const place = await getPlace(id);
-  // 존재하지 않을 시
-  if (!place) {
-    return notFound();
+
+  if (places.length === 0) {
+    return <div>No place found</div>;
   }
-  // const isOwner = await getIsOwner(place.userId);
+
+  const place = places[0];
+
   return (
     <div
       style={{
@@ -57,21 +66,20 @@ export default async function PlaceDetail({
         alignItems: "center",
       }}
     >
-      <div className="flex items-center text-lg text-black text-left font-bold mt-5">
+      <div className="flex items-center justify-between p-5 text-lg text-black text-left font-bold mt-4">
         <div>
           {place.title}
-          <p className="font-semibold text-xs text-gray-300">{place.address}</p>
+          <p className="font-semibold pt-1 text-xs text-gray-300">{place.address}</p>
         </div>
-        <div className="ml-40">
+        <div>
           <OutlineHeartIcon className="w-7 h-7" />
         </div>
       </div>
-
       <div className="p-5 flex justify-center items-center">
-        <Image
+        <CldImage
           className="rounded-lg"
           src={place.photo}
-          alt={`Image`}
+          alt="Image"
           width={330}
           height={230}
         />
