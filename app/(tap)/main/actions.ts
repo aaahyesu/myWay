@@ -71,7 +71,7 @@ export async function getMoreGuid() {
 export async function getMoreRoad() {
   const roads = await prisma.place.findMany({
     where: {
-      category: "관광지",
+      category: "추천코스",
     },
     select: {
       id: true,

@@ -8,11 +8,7 @@ interface BarProps {
   bookmark?: boolean;
 }
 
-export default function Bar({ 
-  title, 
-  bookmark, 
-  canGoBack 
-}: BarProps) {
+export default function Bar({ title, bookmark, canGoBack }: BarProps) {
   const router = useRouter();
 
   const handleGoBack = () => {
@@ -23,12 +19,14 @@ export default function Bar({
     <div className="fixed top-0 z-30 w-full max-w-sm mx-auto bg-white py-2 flex px-4 border-b">
       <div className="flex w-full items-center justify-between">
         {canGoBack && (
-          <button onClick={handleGoBack}>
+          <button onClick={handleGoBack} aria-label="뒤로가기">
             <ChevronLeftIcon className="w-6 h-6 text-gray-700" />
           </button>
         )}
         {title && (
-          <span className="flex-grow text-center text-lg font-medium">{title}</span>
+          <span className="flex-grow text-center text-lg font-medium">
+            {title}
+          </span>
         )}
         {bookmark && (
           <svg

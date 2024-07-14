@@ -16,6 +16,7 @@ export default function HotUpload() {
   const [publicIds, setPublicIds] = useState<string[]>([]);
   const router = useRouter();
   const { status, data: session } = useSession();
+  const [selectedTheme, setSelectedTheme] = useState("");
 
   if (status === "loading") {
     return null;
@@ -36,8 +37,21 @@ export default function HotUpload() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // FormData 생성
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+
+    // uploadSpot 호출 시 formData 전달
+    await uploadSpot(formData);
+
+    // 성공적으로 등록된 후 페이지 이동
+    router.push(`/main`);
+  };
+
   return (
-    <form action={uploadSpot} method="POST">
+    <form onSubmit={handleSubmit} method="POST">
       <div className="py-10">
         <input
           className="w-full px-2 py-2 placeholder-gray-400 text-xl font-semibold border-b-[1.6px] lin border-gray-300 focus:border-gray-400 focus:outline-none"
@@ -87,8 +101,10 @@ export default function HotUpload() {
               name="category"
               aria-label="카테고리선택"
               required
+              value={selectedTheme}
+              onChange={(e) => setSelectedTheme(e.target.value)}
             >
-              <option disabled selected hidden>
+              <option value="" disabled>
                 카테고리를 선택하세요
               </option>
               <option value="맛집">맛집</option>
@@ -116,7 +132,7 @@ export default function HotUpload() {
           </div>
 
           <div className="mt-4 flex flex-wrap">
-            {publicIds.map((publicId, index) => (
+            {publicIds.map((publicId) => (
               <div key={publicId} className="mr-2 mb-2">
                 <CldImage
                   src={publicId}
@@ -130,7 +146,13 @@ export default function HotUpload() {
         </div>
 
         {publicIds.length > 0 && (
-          <input type="hidden" name="photo" id="photo" required value={publicIds} />
+          <input
+            type="hidden"
+            name="photo"
+            id="photo"
+            required
+            value={publicIds}
+          />
         )}
         <input
           name="username"
@@ -271,8 +293,8 @@ export default function HotUpload() {
           </div>
         </div>
         <button
+          type="submit"
           className="w-full mt-10 py-2 text-lg font-semibold bg-black text-white border rounded-lg"
-          onClick={() => router.push(`/main`)}
         >
           등록
         </button>

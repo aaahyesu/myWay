@@ -81,7 +81,7 @@ export default function Main() {
   }, []);
 
   useEffect(() => {
-    if (route.length > 0) {
+    if (route.length > 0 && !window) {
       const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=geometry`;
       script.onload = () => initializeMap();

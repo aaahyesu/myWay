@@ -13,7 +13,7 @@ export async function uploadSpot(formData: FormData) {
     tel: formData.get("tel")?.toString() || "",
     sns: formData.get("sns")?.toString() || "",
     username: formData.get("username")?.toString() || "",
-    category: formData.get("theme")?.toString() || "",
+    category: formData.get("category")?.toString() || "",
   };
 
   const place = await prisma.place.create({

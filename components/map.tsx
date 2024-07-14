@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 
 const containerStyle = {
-  width: "100%",
-  height: "330px",
+  width: "350px",
+  height: "340px",
   marginTop: 10,
 };
 
