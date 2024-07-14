@@ -58,6 +58,7 @@ export default function Main() {
   const [route, setRoutes] = useState<Route[]>([]);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const { data: session } = useSession();
+  console.log(mapRef);
 
   useEffect(() => {
     async function fetchPlaces() {
@@ -81,16 +82,14 @@ export default function Main() {
   }, []);
 
   useEffect(() => {
-    if (route.length > 0 && !window) {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=geometry`;
-      script.onload = () => initializeMap();
-      document.body.appendChild(script);
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=geometry`;
+    script.onload = () => initializeMap();
+    document.body.appendChild(script);
 
-      return () => {
-        document.body.removeChild(script);
-      };
-    }
+    return () => {
+      document.body.removeChild(script);
+    };
   }, [route]);
 
   const initializeMap = () => {
@@ -119,8 +118,8 @@ export default function Main() {
           const bounds = new google.maps.LatLngBounds();
 
           route.forEach((coord) => {
-            const latArray = JSON.parse(coord.latitude);
-            const lngArray = JSON.parse(coord.longitude);
+            const latArray = JSON.parse(coord?.latitude);
+            const lngArray = JSON.parse(coord?.longitude);
             const id = coord.id;
             const color = colorMap[id] || "#D1B2FF";
 
