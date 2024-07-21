@@ -10,7 +10,7 @@ datasource db {
 model User {
   id    Int     @id @default(autoincrement())
   email String  @unique
-  name  String  @unique
+  name  String  
   posts Post[]
   place Place[]
 }
@@ -27,8 +27,8 @@ model Place {
   tel       String
   sns       String
 
-  user      User     @relation(fields: [username], references: [name], onDelete: Cascade)
-  username  String
+  user      User     @relation(fields: [useremail], references: [email], onDelete: Cascade)
+  useremail  String
 }
 model banner {
   id        Int     @id @default(autoincrement())
@@ -45,8 +45,8 @@ model Post {
   content        String       
   photo          String
   coordinate     Coordinate[]
-  author         User         @relation(fields: [authorname], references: [name], onDelete: Cascade)
-  authorname     String
+  author         User         @relation(fields: [authoremail], references: [email], onDelete: Cascade)
+  authoremail     String
 }
 
 model Coordinate {
@@ -59,4 +59,5 @@ model Coordinate {
   postId    Int?
   post      Post?    @relation(fields: [postId], references: [id])
 }
+
 
