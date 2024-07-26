@@ -9,11 +9,11 @@ import { getMorePlaces } from "@/app/(tap)/main/actions";
 import Image from "next/image";
 
 type Post = {
-  authorname: string;
+  authorEmail: string;
 };
 
 type Place = {
-  username: string;
+  userEmail: string;
 };
 
 export default function Mypage() {
@@ -40,7 +40,7 @@ export default function Mypage() {
       try {
         const fetchedPosts = await getPosts();
         const filteredPost = fetchedPosts.filter(
-          (posting) => posting.authorname === String(session?.user?.name)
+          (posting) => posting.authorEmail === String(session?.user?.email)
         );
         setPostAll(fetchedPosts);
         setPosts(filteredPost);
@@ -56,7 +56,7 @@ export default function Mypage() {
       try {
         const fetchedPlaces = await getMorePlaces(1, 1);
         const filteredPlaces = fetchedPlaces.filter(
-          (place) => place.username === String(session?.user?.name)
+          (place) => place.userEmail === String(session?.user?.email)
         );
         setPlaces(filteredPlaces);
       } catch (error) {
@@ -119,7 +119,9 @@ export default function Mypage() {
           </div>
         </Link>
       </div>
-      <h1 className="pt-16 text-gray-500 text-lg font-medium px-4">나의 뱃지 목록</h1>
+      <h1 className="pt-16 text-gray-500 text-lg font-medium px-4">
+        나의 뱃지 목록
+      </h1>
       <div className="pt-4 flex justify-center gap-6 text-gray-500">
         <div className="flex flex-col items-center">
           <Image

@@ -10,7 +10,7 @@ type Place = {
   title: string;
   address: string;
   photo: string;
-  username: string;
+  userEmail: string;
 };
 
 export default function Hotplace() {
@@ -22,8 +22,8 @@ export default function Hotplace() {
     async function fetchPlaces() {
       try {
         const fetchedPlaces = await getMorePlaces(page, 1);
-        const filteredPlaces= fetchedPlaces.filter(
-          (place) => place.username === String(session?.user?.name)
+        const filteredPlaces = fetchedPlaces.filter(
+          (place) => place.userEmail === String(session?.user?.email)
         );
         setPlaces(filteredPlaces);
       } catch (error) {
@@ -36,7 +36,7 @@ export default function Hotplace() {
 
   return (
     <div className="grid grid-cols-2 gap-4 mt-4 pt-10">
-      <Bar canGoBack title="등록한 핫플 목록"/>
+      <Bar canGoBack title="등록한 핫플 목록" />
       {places.map((place) => (
         <ListPlace key={place.id} {...place} />
       ))}

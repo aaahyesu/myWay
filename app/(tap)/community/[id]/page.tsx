@@ -15,7 +15,10 @@ type Post = {
   theme: string;
   content: string;
   photo: string;
-  authorname: string;
+  authorEmail: string;
+  author: {
+    name: string;
+  };
   coordinate: {
     address: string;
     latitude: string;
@@ -90,17 +93,22 @@ export default function Detail() {
       : [];
 
     const addMarkersAndPolyline = async () => {
-      const coordinatesPromises = addresses.map((address: string) =>
-        new Promise<{ lat: number; lng: number }>((resolve, reject) => {
-          geocoder.geocode({ address }, (results, status) => {
-            if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
-              const location = results[0].geometry.location;
-              resolve({ lat: location.lat(), lng: location.lng() });
-            } else {
-              reject(status);
-            }
-          });
-        })
+      const coordinatesPromises = addresses.map(
+        (address: string) =>
+          new Promise<{ lat: number; lng: number }>((resolve, reject) => {
+            geocoder.geocode({ address }, (results, status) => {
+              if (
+                status === google.maps.GeocoderStatus.OK &&
+                results &&
+                results[0]
+              ) {
+                const location = results[0].geometry.location;
+                resolve({ lat: location.lat(), lng: location.lng() });
+              } else {
+                reject(status);
+              }
+            });
+          })
       );
 
       try {
@@ -179,7 +187,7 @@ export default function Detail() {
           alt=""
         />
         <div>
-          <h1 className="text-base">{post.authorname}</h1>
+          <h1 className="text-base">{post.author?.name}</h1>
         </div>
       </div>
       <div className="relative pt-10">
@@ -193,10 +201,10 @@ export default function Detail() {
         <div className="slider-container relative z-20">
           <Slider>
             {post.photo.split(",").map((photoUrl, index) => (
-              <div key={index} className="w-200 h-200 flex-shrink-0">
+              <div key={index} className="w-[250px] h-[250px] flex-shrink-0">
                 <CldImage
                   src={photoUrl.trim()}
-                  className="rounded-lg shadow-md"
+                  className="rounded-lg shadow-md h-full object-cover"
                   alt={`Photo ${index + 1}`}
                   width={250}
                   height={250}

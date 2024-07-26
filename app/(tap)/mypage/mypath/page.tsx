@@ -13,7 +13,7 @@ type Post = {
   theme: string;
   content: string;
   photo: string;
-  authorname: string;
+  authorEmail: string;
 };
 
 export default function Community() {
@@ -26,7 +26,7 @@ export default function Community() {
       try {
         const fetchedPosts = await getPosts();
         const filteredPost = fetchedPosts.filter(
-          (posting) => posting.authorname === String(session?.user?.name)
+          (posting) => posting.authorEmail === String(session?.user?.email)
         );
         setPosts(filteredPost);
         setCurrentSlides(new Array(filteredPost.length).fill(0)); // Initialize slides for each post
@@ -66,10 +66,10 @@ export default function Community() {
             <div className="w-full h-full flex items-center justify-center">
               <CldImage
                 src={post.photo.split(",")[currentSlides[i]]}
-                width={170}
-                height={170}
+                width={160}
+                height={160}
                 alt="Uploaded Image"
-                className="object-cover"
+                className="object-cover w-[160px] h-[160px]"
               />
             </div>
             {post.photo.split(",").length > 1 && (

@@ -9,7 +9,12 @@ export async function getPosts() {
       theme: true,
       content: true,
       photo: true,
-      authorname: true,
+      authorEmail: true,
+      author: {
+        select: {
+          name: true,
+        },
+      },
       coordinate: {
         select: {
           address: true,

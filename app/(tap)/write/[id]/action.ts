@@ -9,16 +9,15 @@ export async function upload(formData: FormData) {
     names: formData.get("names")?.toString() || "",
     content: formData.get("content")?.toString() || "",
     photo: formData.get("photo")?.toString() || "",
-    username: formData.get("username")?.toString() || "",
+    userEmail: formData.get("userEmail")?.toString() || "",
     key: formData.get("key")?.toString() || "",
   };
-
 
   const title = data.title.toString();
   const theme = data.theme.toString();
   const names = data.names.toString();
   const content = data.content.toString();
-  const username = data.username.toString();
+  const userEmail = data.userEmail.toString();
   const photo = data.photo.toString();
   const key = data.key as string;
 
@@ -32,10 +31,11 @@ export async function upload(formData: FormData) {
       photo: photo,
       author: {
         connect: {
-          name: username,
+          email: userEmail,
         },
       },
-    }})
+    },
+  });
 
   const updateCoordinate = await prisma.coordinate.update({
     where: {
@@ -43,7 +43,7 @@ export async function upload(formData: FormData) {
     },
     data: {
       name: names,
-      postId: post.id
+      postId: post.id,
     },
   });
 

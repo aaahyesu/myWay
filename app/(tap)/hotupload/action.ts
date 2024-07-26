@@ -12,7 +12,7 @@ export async function uploadSpot(formData: FormData) {
     close: formData.get("close")?.toString() || "",
     tel: formData.get("tel")?.toString() || "",
     sns: formData.get("sns")?.toString() || "",
-    username: formData.get("username")?.toString() || "",
+    userEmail: formData.get("userEmail")?.toString() || "",
     category: formData.get("category")?.toString() || "",
   };
 
@@ -29,7 +29,7 @@ export async function uploadSpot(formData: FormData) {
       photo: data.photo,
       user: {
         connect: {
-          name: data.username,
+          email: data.userEmail,
         },
       },
     },

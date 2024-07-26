@@ -133,7 +133,7 @@ export default function Page() {
     return null;
   }
 
-  if (!session?.user?.name) {
+  if (!session?.user?.email) {
     throw new Error("User name not found in session");
   }
 
@@ -204,6 +204,7 @@ export default function Page() {
             value={selectedTheme}
             onChange={(e) => setSelectedTheme(e.target.value)}
             required
+            aria-label="theme"
           >
             <option value="" disabled>
               테마를 선택하세요
@@ -303,9 +304,9 @@ export default function Page() {
           )}
         </div>
         <input
-          name="username"
-          id="username"
-          value={session.user.name}
+          name="userEmail"
+          id="userEmail"
+          value={session.user.email}
           type="hidden"
           required
         />

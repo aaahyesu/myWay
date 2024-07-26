@@ -22,8 +22,8 @@ export default function HotUpload() {
     return null;
   }
 
-  if (!session?.user?.name) {
-    throw new Error("User name not found in session");
+  if (!session?.user?.email) {
+    throw new Error("User email not found in session");
   }
 
   const handleUpload = (result: any) => {
@@ -153,9 +153,9 @@ export default function HotUpload() {
           />
         )}
         <input
-          name="username"
-          id="username"
-          value={session.user.name}
+          name="userEmail"
+          id="userEmail"
+          value={session.user.email}
           type="hidden"
           required
         />

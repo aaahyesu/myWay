@@ -27,8 +27,8 @@ model Place {
   tel       String
   sns       String
 
-  user      User     @relation(fields: [useremail], references: [email], onDelete: Cascade)
-  useremail  String
+  user      User     @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+  userEmail  String
 }
 model banner {
   id        Int     @id @default(autoincrement())
@@ -45,8 +45,8 @@ model Post {
   content        String       
   photo          String
   coordinate     Coordinate[]
-  author         User         @relation(fields: [authoremail], references: [email], onDelete: Cascade)
-  authoremail     String
+  author         User         @relation(fields: [authorEmail], references: [email], onDelete: Cascade)
+  authorEmail    String
 }
 
 model Coordinate {

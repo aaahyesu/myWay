@@ -6,6 +6,7 @@ export async function getMorePlaces(page: number, userId: number) {
 
   return places;
 }
+
 export async function getMoreBanners() {
   const banners = await prisma.post.findMany({
     select: {
@@ -48,6 +49,7 @@ export async function getMoreRestaurant() {
       address: true,
     },
   });
+  console.log(restaurants);
 
   return restaurants;
 }

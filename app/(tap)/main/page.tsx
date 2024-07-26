@@ -58,7 +58,6 @@ export default function Main() {
   const [route, setRoutes] = useState<Route[]>([]);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const { data: session } = useSession();
-  console.log(mapRef);
 
   useEffect(() => {
     async function fetchPlaces() {
