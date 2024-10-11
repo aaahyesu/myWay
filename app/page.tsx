@@ -27,14 +27,14 @@ export default function Home() {
     <div className="flex flex-col items-center justify-between min-h-screen p-6">
       <div className="my-auto flex flex-col items-center gap-3 *:font-medium">
         <img src="/character.png" alt="main character" className="w-50 h-50 " />
-        <h1 className={`text-6xl font-LOTTERIACHAB text-green-900`}>My Way</h1>
-        <h2 className="text-lg font-NPSfontBold text-gray-700">
+        <h1 className={`text-6xl font-LOTTERIACHAB text-gray-900`}>My Way</h1>
+        <h2 className="text-lg font-NPSfontBold text-gray-500">
           나만의 길을 개척해봐 !
         </h2>
       </div>
       <div className="flex flex-col items-center gap-3 w-full">
         <button
-          className="w-full bg-black text-white text-lg font-medium py-2.5 rounded-md text-center hover:bg-gray-700 transition-colors"
+          className="w-full bg-emerald-800 text-white text-lg font-medium py-2.5 rounded-md text-center hover:bg-gray-700 transition-colors"
           onClick={handleStartClick}
         >
           시작하기

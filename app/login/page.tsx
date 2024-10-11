@@ -29,8 +29,8 @@ export default function Login() {
   return (
     <div className="flex flex-col items-center justify-between min-h-screen p-6">
       <div className="my-auto flex flex-col items-center gap-3 *:font-medium">
-        <h1 className="text-6xl font-LOTTERIACHAB text-green-900">Login</h1>
-        <h2 className="text-lg font-NPSfontBold text-gray-700">
+        <h1 className="text-6xl font-LOTTERIACHAB text-gray-900">Login</h1>
+        <h2 className="text-lg font-NPSfontBold text-gray-500">
           원하는 로그인 방법을 선택하세요
         </h2>
       </div>
