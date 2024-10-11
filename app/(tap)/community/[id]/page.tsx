@@ -7,11 +7,11 @@ import "slick-carousel/slick/slick-theme.css";
 import { getPosts } from "../action";
 import { usePathname } from "next/navigation";
 import { CldImage } from "next-cloudinary";
-import Bar from "@/components/bar";
-import Comment from "@/components/Comment";
-import Recommend from "@/components/Recommend";
-import Profile from "@/components/Profile";
-import CommuPlace from "@/components/CommuPlace";
+import Bar from "@/components/common/Bar";
+import Comment from "@/components/layout/Comment";
+import Recommend from "@/components/layout/Recommend";
+import Profile from "@/components/layout/Profile";
+import CommuPlace from "@/components/layout/CommuPlace";
 
 export type Post = {
   id: number;

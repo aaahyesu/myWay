@@ -2,8 +2,8 @@
 import { getMorePlaces } from "@/app/(tap)/main/actions";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import ListPlace from "@/components/list-place";
-import Bar from "@/components/bar";
+import ListPlace from "@/components/layout/ListPlace";
+import Bar from "@/components/common/Bar";
 
 type Place = {
   id: number;

@@ -1,6 +1,6 @@
-import TabBar from "@/components/tap-bar";
+import TabBar from "@/components/common/TabBar";
 import { ReactNode } from "react";
-import Providers from "@/components/Providers";
+import Providers from "@/components/common/Providers";
 
 export default function TabLayout({ children }: { children: ReactNode }) {
   return (

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Bar from "@/components/bar";
+import Bar from "@/components/common/Bar";
 import { getPosts } from "@/app/(tap)/community/action";
 import { getMorePlaces } from "@/app/(tap)/main/actions";
 import Image from "next/image";

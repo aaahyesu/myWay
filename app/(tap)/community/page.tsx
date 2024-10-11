@@ -4,8 +4,8 @@ import Link from "next/link";
 import { getPosts } from "./action";
 import { CldImage } from "next-cloudinary";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
-import Bar from "@/components/bar";
-import Profile from "@/components/Profile";
+import Bar from "@/components/common/Bar";
+import Profile from "@/components/layout/Profile";
 
 export type Post = {
   id: number;

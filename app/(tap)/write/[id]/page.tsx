@@ -7,7 +7,7 @@ import { getMapKey } from "../action";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Bar from "@/components/bar";
+import Bar from "@/components/common/Bar";
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
 

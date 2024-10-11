@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getPosts } from "@/app/(tap)/community/action";
 import { CldImage } from "next-cloudinary";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
-import Bar from "@/components/bar";
+import Bar from "@/components/common/Bar";
 import { useSession } from "next-auth/react";
 
 type Post = {

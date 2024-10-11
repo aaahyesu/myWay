@@ -5,7 +5,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
-import ListBanner from "@/components/list-banner";
+import ListBanner from "@/components/layout/ListBanner";
 
 type Banner = {
   id: number;

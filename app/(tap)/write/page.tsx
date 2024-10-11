@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 import { upload } from "./action";
 import { useRouter } from "next/navigation";
-import Bar from "@/components/bar";
+import Bar from "@/components/common/Bar";
 
 const containerStyle = {
   width: "100%",
@@ -40,7 +40,8 @@ export default function Write() {
 
   const router = useRouter();
 
-  const newKey = (Date.now()) * Number(10000) + Number(Math.floor(Math.random() * 10000));
+  const newKey =
+    Date.now() * Number(10000) + Number(Math.floor(Math.random() * 10000));
   const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_KEY || "";
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",

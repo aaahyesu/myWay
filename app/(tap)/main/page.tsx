@@ -6,10 +6,10 @@ import { getMorePlaces, getMoreBanners, getMoreRoute } from "./actions";
 import { useSession } from "next-auth/react";
 
 import { Bars3CenterLeftIcon, UserCircleIcon } from "@heroicons/react/24/solid";
-import ListPlace from "@/components/list-place";
-import CategoryComponent from "@/components/CatergoryComponent";
-import BannerSwiper from "@/components/BannerSwiper";
-import MainMapComponent from "@/components/MainMapComponent";
+import ListPlace from "@/components/layout/ListPlace";
+import CategoryComponent from "@/components/layout/CatergoryComponent";
+import BannerSwiper from "@/components/layout/BannerSwiper";
+import MainMapComponent from "@/components/layout/MainMapComponent";
 
 type Place = {
   id: number;
