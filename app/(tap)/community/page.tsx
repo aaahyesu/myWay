@@ -5,8 +5,9 @@ import { getPosts } from "./action";
 import { CldImage } from "next-cloudinary";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
 import Bar from "@/components/bar";
+import Profile from "@/components/Profile";
 
-type Post = {
+export type Post = {
   id: number;
   title: string;
   theme: string;
@@ -27,7 +28,7 @@ export default function Community() {
       try {
         const fetchedPosts = await getPosts();
         setPosts(fetchedPosts);
-        setCurrentSlides(new Array(fetchedPosts.length).fill(0)); // Initialize slides for each post
+        setCurrentSlides(new Array(fetchedPosts.length).fill(0));
       } catch (error) {
         console.error("Error fetching places: ", error);
       }
@@ -55,27 +56,14 @@ export default function Community() {
   };
 
   return (
-    <div className="py-10">
+    <div className="py-10 ">
       <Bar title="커뮤니티" />
       {posts.map((post, i) => (
         <div
           key={i}
-          className="mt-8 rounded-lg border border-gray-200 shadow-md p-3"
+          className="mt-8 rounded-lg border border-gray-200 shadow-md p-3 transition-transform duration-300 ease-in-out hover:scale-105"
         >
-          <div className="flex space-x-3 mb-2 items-center">
-            <img
-              className="inline-block h-9 w-9 rounded-full ring-2 ring-white"
-              src="./profile.png"
-              alt=""
-            />
-            <div>
-              <h1 className="text-base">{post.author.name}</h1>
-            </div>
-            <div className="flex flex-grow justify-end"></div>
-            <button className="inline-flex items-center rounded-2xl bg-gray-50 px-4 py-2 text-xs text-gray-600 ring-1 ring-inset ring-gray-500/10">
-              follow
-            </button>
-          </div>
+          <Profile post={post} />
           <div className="w-[360px] h-[360px] m-auto relative group flex items-center justify-center">
             <div className="w-full h-full flex items-center justify-center">
               <CldImage
@@ -89,13 +77,13 @@ export default function Community() {
             </div>
             {post.photo.split(",").length > 1 && (
               <>
-                <div className="absolute top-[50%] transform -translate-y-1/2 -left-1 text-2xl rounded-full p-0.5 text-white cursor-pointer bg-gray-800/20">
+                <div className="absolute z-100 top-[50%] transform -translate-y-1/2 -left-1 text-2xl rounded-full p-0.5 text-white cursor-pointer bg-gray-800/20">
                   <BsChevronCompactLeft
                     onClick={() => prevSlide(i)}
                     size={30}
                   />
                 </div>
-                <div className="absolute top-[50%] transform -translate-y-1/2 -right-1 text-2xl rounded-full p-0.5 text-white cursor-pointer bg-gray-800/20">
+                <div className="absolute z-100 top-[50%] transform -translate-y-1/2 -right-1 text-2xl rounded-full p-0.5 text-white cursor-pointer bg-gray-800/20">
                   <BsChevronCompactRight
                     onClick={() => nextSlide(i)}
                     size={30}
@@ -104,19 +92,20 @@ export default function Community() {
               </>
             )}
           </div>
-          <div className="border-t border-gray-200 my-3"></div>
-          <Link href={`/community/${post.id}`}>
-            <div className="mt-2 flex space-x-2 px-2">
-              <h1 className="text-black text-base hover:text-gray-500 font-semibold">
-                {post.title}
-              </h1>
-              <span className="inline-flex items-center rounded-lg bg-blue-400 px-2 text-sm text-white">
-                {post.theme}
-              </span>
+          <Link href={`/community/${post.id}`} key={post.id}>
+            <div className="border-t border-gray-200 mb-2 mt-4">
+              <div className="mt-2 flex space-x-2 px-2">
+                <h2 className="text-black text-base hover:text-gray-500 font-semibold">
+                  {post.title}
+                </h2>
+                <p className="inline-flex items-center rounded-lg bg-blue-400 px-2 text-sm text-white">
+                  {post.theme}
+                </p>
+              </div>
+              <p className="mt-1 px-2 text-black hover:text-gray-500 text-sm">
+                {post.content}
+              </p>
             </div>
-            <h1 className="mt-1 px-2 text-black hover:text-gray-500 text-sm">
-              {post.content}
-            </h1>
           </Link>
         </div>
       ))}
