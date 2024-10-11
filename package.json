@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.5.3",
     "@heroicons/react": "^2.1.1",
     "@prisma/client": "^5.12.0",
     "@react-google-maps/api": "^2.19.3",

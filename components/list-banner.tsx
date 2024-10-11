@@ -22,10 +22,10 @@ function ListBanner({ title, content, photo, id }: ListBannerProps) {
             alt="배너 이미지"
             width={100}
             height={70}
-            layout="fixed"
             quality="auto" // 자동으로 최적 품질 적용
             format="auto"
-            priority
+            loading="lazy"
+            priority={false}
           />
         </div>
       </div>
